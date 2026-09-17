@@ -524,13 +524,13 @@ function calcularPromedioGeneral() {
     let claseMensaje = "";
 
     if (promedioGeneral >= 4.0) {
-        mensajeDesempeno = "🌟 ¡Excelente rendimiento académico! Tu promedio supera el estándar de excelencia.";
+        mensajeDesempeno = "¡Excelente rendimiento académico! Tu promedio supera el estándar de excelencia.";
         claseMensaje = "alert-box alert-box--success";
     } else if (promedioGeneral >= 3.0) {
-        mensajeDesempeno = "👍 Rendimiento académico satisfactorio. Cumples con el valor mínimo aprobatorio de 3.0.";
+        mensajeDesempeno = "Rendimiento académico satisfactorio. Cumples con el valor mínimo aprobatorio de 3.0.";
         claseMensaje = "alert-box alert-box--info";
     } else {
-        mensajeDesempeno = "⚠️ Rendimiento académico en riesgo. El promedio está por debajo del mínimo de 3.0.";
+        mensajeDesempeno = "Rendimiento académico en riesgo. El promedio está por debajo del mínimo de 3.0.";
         claseMensaje = "alert-box alert-box--error";
     }
 
@@ -719,14 +719,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (nombre === "" || email === "" || tipo === "" || mensaje === "") {
                 alerta.className = "alert-box alert-box--error";
-                alerta.textContent = "⚠️ Por favor, completa todos los campos obligatorios.";
+                alerta.textContent = "Por favor, completa todos los campos obligatorios.";
                 alerta.style.display = "block";
                 return;
             }
 
             if (!email.includes("@") || !email.includes(".")) {
                 alerta.className = "alert-box alert-box--error";
-                alerta.textContent = "⚠️ Ingresa un correo electrónico con formato válido.";
+                alerta.textContent = "Ingresa un correo electrónico con formato válido.";
                 alerta.style.display = "block";
                 return;
             }
@@ -743,7 +743,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             alerta.className = "alert-box alert-box--success";
             alerta.innerHTML = `
-                ✅ <strong>¡Solicitud registrada correctamente!</strong><br>
+                <strong>¡Solicitud registrada correctamente!</strong><br>
                 Estimado/a <em>${escaparHtml(nombre)}</em>, tu solicitud de tipo <strong>"${escaparHtml(tipo)}"</strong> 
                 ha sido guardada en la lista local. (Simulación local sin backend).
             `;
