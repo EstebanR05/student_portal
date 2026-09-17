@@ -1,50 +1,46 @@
-/* =======================================================
-   PORTAL ESTUDIANTIL - HOJA DE ESTILOS PRINCIPAL
-   ======================================================= */
-
-/* ---------- 1. Variables y Paleta de Colores (:root) ---------- */
 :root {
-    /* Paleta Institucional */
-    --color-primary: #1b3a57;        /* Azul institucional profundo */
-    --color-primary-hover: #12283e;  /* Azul oscuro hover */
-    --color-secondary: #0077b6;      /* Azul intermedio de acento */
-    --color-secondary-light: #e0f2fe;/* Azul pastel suave */
-    --color-accent: #0284c7;         /* Azul botón / acción */
+    --color-primary: #0f172a;
+    --color-primary-light: #1e293b;
+    --color-brand: #2563eb;
+    --color-brand-hover: #1d4ed8;
+    --color-brand-soft: #eff6ff;
     
-    /* Estados y Badges */
-    --status-approved-bg: #dcfce7;
-    --status-approved-text: #166534;
-    --status-approved-border: #86efac;
-    
-    --status-pending-bg: #fef9c3;
-    --status-pending-text: #854d0e;
-    --status-pending-border: #fde047;
-    
-    --status-failed-bg: #fee2e2;
-    --status-failed-text: #991b1b;
-    --status-failed-border: #fca5a5;
+    --status-approved-bg: #ecfdf5;
+    --status-approved-text: #047857;
+    --status-approved-border: #a7f3d0;
 
-    /* Superficies y Fondos */
+    --status-pending-bg: #fffbeb;
+    --status-pending-text: #b45309;
+    --status-pending-border: #fde68a;
+
+    --status-failed-bg: #fff1f2;
+    --status-failed-text: #be123c;
+    --status-failed-border: #fecdd3;
+
     --bg-body: #f8fafc;
     --bg-surface: #ffffff;
     --bg-surface-alt: #f1f5f9;
-    
-    /* Tipografía y Bordes */
+    --bg-muted: #e2e8f0;
+
     --text-main: #1e293b;
     --text-muted: #64748b;
     --text-light: #ffffff;
-    --border-color: #cbd5e1;
-    --border-light: #e2e8f0;
 
-    /* Sombras y Radios */
-    --radius-sm: 4px;
-    --radius-md: 8px;
-    --radius-lg: 12px;
-    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
+    --border-color: #e2e8f0;
+    --border-subtle: #f1f5f9;
+    --border-focus: #3b82f6;
+
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+    --radius-full: 9999px;
+
+    --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-sm: 0 1px 3px 0 rgba(15, 23, 42, 0.08), 0 1px 2px -1px rgba(15, 23, 42, 0.08);
+    --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.08), 0 2px 4px -2px rgba(15, 23, 42, 0.05);
+    --shadow-lg: 0 10px 15px -3px rgba(15, 23, 42, 0.08), 0 4px 6px -4px rgba(15, 23, 42, 0.03);
 }
 
-/* ---------- 2. Configuración General & Box Model ---------- */
 * {
     box-sizing: border-box;
 }
@@ -55,22 +51,24 @@ html {
 
 body {
     margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     background-color: var(--bg-body);
     color: var(--text-main);
     line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
 }
 
-/* ---------- 3. Encabezado & Hero ---------- */
 header {
-    background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+    background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%);
     color: var(--text-light);
     padding: 2.5rem 1.5rem;
     box-shadow: var(--shadow-md);
+    position: relative;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .header-container {
-    max-width: 1100px;
+    max-width: 1140px;
     margin: 0 auto;
     display: flex;
     justify-content: space-between;
@@ -80,33 +78,39 @@ header {
 }
 
 .header-title h1 {
-    margin: 0 0 0.3rem 0;
-    font-size: 2rem;
-    letter-spacing: -0.02em;
+    margin: 0 0 0.25rem 0;
+    font-size: 1.85rem;
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    color: #ffffff;
 }
 
 .header-title p {
     margin: 0;
-    color: var(--color-secondary-light);
-    font-size: 1rem;
+    color: #94a3b8;
+    font-size: 0.95rem;
+    font-weight: 400;
 }
 
 .header-badge {
-    background-color: rgba(255, 255, 255, 0.15);
-    border: 1px solid rgba(255, 255, 255, 0.25);
-    padding: 0.5rem 1rem;
-    border-radius: var(--radius-md);
-    font-size: 0.9rem;
-    color: var(--text-light);
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    padding: 0.45rem 0.9rem;
+    border-radius: var(--radius-full);
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #e2e8f0;
+    letter-spacing: 0.02em;
 }
 
-/* ---------- 4. Barra de Navegación ---------- */
 nav {
-    background-color: var(--color-primary);
+    background-color: #0f172a;
     position: sticky;
     top: 0;
     z-index: 100;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 nav ul {
@@ -117,7 +121,7 @@ nav ul {
     justify-content: center;
     align-items: center;
     flex-wrap: wrap;
-    max-width: 1100px;
+    max-width: 1140px;
     margin: 0 auto;
 }
 
@@ -127,51 +131,64 @@ nav li {
 
 nav a {
     display: block;
-    padding: 1rem 1.2rem;
-    color: var(--text-light);
+    padding: 0.9rem 1.25rem;
+    color: #cbd5e1;
     text-decoration: none;
     font-weight: 600;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     transition: all 0.2s ease;
+    border-bottom: 3px solid transparent;
 }
 
 nav a:hover,
-nav a.active {
-    background-color: var(--color-secondary);
+nav a:focus {
     color: #ffffff;
+    background-color: rgba(255, 255, 255, 0.05);
 }
 
-/* ---------- 5. Contenedor Principal & Secciones ---------- */
+nav a:active {
+    border-bottom-color: var(--color-brand);
+}
+
 main {
-    max-width: 1100px;
-    margin: 2rem auto;
+    max-width: 1140px;
+    margin: 2.5rem auto;
     padding: 0 1.5rem;
     min-height: 70vh;
 }
 
 section {
     background-color: var(--bg-surface);
-    margin-bottom: 2rem;
-    padding: 2rem;
-    border: 1px solid var(--border-light);
+    margin-bottom: 2.5rem;
+    padding: 2.25rem;
+    border: 1px solid var(--border-color);
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-sm);
+    transition: box-shadow 0.2s ease;
+}
+
+section:hover {
+    box-shadow: var(--shadow-md);
 }
 
 section h2 {
     margin-top: 0;
     color: var(--color-primary);
-    font-size: 1.5rem;
-    border-bottom: 3px solid var(--color-secondary);
-    padding-bottom: 0.6rem;
+    font-size: 1.4rem;
+    font-weight: 700;
+    border-bottom: 2px solid var(--color-brand-soft);
+    padding-bottom: 0.75rem;
     margin-bottom: 1.5rem;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.6rem;
+    letter-spacing: -0.015em;
 }
 
 section h3 {
     color: var(--color-primary);
+    font-size: 1.15rem;
+    font-weight: 700;
     margin-top: 1.5rem;
     margin-bottom: 0.75rem;
 }
@@ -179,77 +196,113 @@ section h3 {
 p {
     margin-top: 0;
     margin-bottom: 1rem;
+    color: var(--text-main);
 }
 
-/* ---------- 6. Componentes: Tarjetas (Cards) con Flexbox ---------- */
 .card-grid {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     gap: 1.5rem;
-    margin-top: 1.5rem;
+    margin-top: 1.25rem;
 }
 
 .card {
-    flex: 1 1 calc(33.333% - 1.5rem);
-    min-width: 280px;
     background-color: var(--bg-surface);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-md);
-    padding: 1.5rem;
-    box-shadow: var(--shadow-sm);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    padding: 1.4rem;
+    box-shadow: var(--shadow-xs);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
 }
 
 .card:hover {
-    transform: translateY(-3px);
+    border-color: #cbd5e1;
+    transform: translateY(-2px);
     box-shadow: var(--shadow-md);
 }
 
 .card--accent {
-    border-left: 5px solid var(--color-secondary);
-    background-color: var(--bg-surface-alt);
+    background: linear-gradient(to bottom right, #ffffff, #f8fafc);
+    border-left: 4px solid var(--color-brand);
 }
 
 .card__header {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 0.75rem;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
 }
 
 .card__title {
     margin: 0;
-    font-size: 1.15rem;
+    font-size: 1.1rem;
+    font-weight: 700;
     color: var(--color-primary);
+    line-height: 1.35;
 }
 
-.card__body p {
-    margin: 0.35rem 0;
-    font-size: 0.95rem;
-    color: var(--text-main);
+.card__body {
+    flex-grow: 1;
 }
 
-.card__footer {
-    margin-top: 1rem;
-    padding-top: 0.75rem;
-    border-top: 1px solid var(--border-light);
+.card__meta-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    margin: 0.75rem 0;
+}
+
+.card__meta-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    font-size: 0.88rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px dashed var(--border-subtle);
 }
 
-/* ---------- 7. Badges de Estado ---------- */
+.card__meta-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.meta-label {
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.meta-value {
+    color: var(--text-main);
+    font-weight: 600;
+    text-align: right;
+}
+
+.acciones-asignatura {
+    display: flex;
+    gap: 0.6rem;
+    margin-top: 1.2rem;
+    padding-top: 0.9rem;
+    border-top: 1px solid var(--border-subtle);
+}
+
+.acciones-asignatura .btn {
+    flex: 1;
+}
+
 .badge {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
     padding: 0.25rem 0.65rem;
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     font-weight: 700;
     text-transform: uppercase;
-    border-radius: 9999px;
-    letter-spacing: 0.03em;
+    border-radius: var(--radius-full);
+    letter-spacing: 0.04em;
+    white-space: nowrap;
 }
 
 .badge--approved {
@@ -270,111 +323,137 @@ p {
     border: 1px solid var(--status-failed-border);
 }
 
-/* ---------- 8. Componentes: Tablas Académicas ---------- */
 .table-responsive {
     width: 100%;
     overflow-x: auto;
-    margin-top: 1rem;
+    margin-top: 1.25rem;
     border: 1px solid var(--border-color);
     border-radius: var(--radius-md);
+    background-color: var(--bg-surface);
 }
 
 table {
     width: 100%;
     border-collapse: collapse;
-    background-color: var(--bg-surface);
-    font-size: 0.95rem;
+    font-size: 0.92rem;
 }
 
 th, td {
-    padding: 0.9rem 1rem;
+    padding: 0.85rem 1rem;
     text-align: left;
-    border-bottom: 1px solid var(--border-light);
+    border-bottom: 1px solid var(--border-color);
 }
 
 th {
-    background-color: var(--color-primary);
-    color: var(--text-light);
-    font-weight: 600;
+    background-color: #f8fafc;
+    color: var(--text-muted);
+    font-weight: 700;
     text-transform: uppercase;
-    font-size: 0.82rem;
+    font-size: 0.78rem;
     letter-spacing: 0.05em;
+    border-bottom: 2px solid var(--border-color);
 }
 
-tr:nth-child(even) {
-    background-color: var(--bg-surface-alt);
+tr:last-child td {
+    border-bottom: none;
 }
 
-tr:hover {
-    background-color: var(--color-secondary-light);
+tr:hover td {
+    background-color: #f8fafc;
 }
 
-.text-center {
-    text-align: center;
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+.font-bold { font-weight: 700; }
+
+.form-section-card {
+    background-color: #f8fafc;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 1.75rem;
+    margin-top: 2rem;
 }
 
-.text-right {
-    text-align: right;
+.form-section-card h3 {
+    margin-top: 0;
+    margin-bottom: 1.25rem;
+    color: var(--color-primary);
+    font-size: 1.15rem;
 }
 
-.font-bold {
-    font-weight: bold;
-}
-
-/* ---------- 9. Componentes: Formularios ---------- */
 form {
-    max-width: 680px;
-    margin: 0 auto;
+    width: 100%;
 }
 
 .form-group {
     margin-bottom: 1.25rem;
 }
 
+.form-grid-2 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.25rem;
+}
+
+.form-grid-3 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1.25rem;
+}
+
 label {
     display: block;
     font-weight: 600;
-    color: var(--color-primary);
+    color: var(--text-main);
     margin-bottom: 0.4rem;
-    font-size: 0.95rem;
+    font-size: 0.88rem;
 }
 
 input, select, textarea {
     width: 100%;
-    padding: 0.75rem 0.9rem;
-    border: 1px solid var(--border-color);
+    padding: 0.65rem 0.85rem;
+    border: 1px solid #cbd5e1;
     border-radius: var(--radius-sm);
     font-family: inherit;
-    font-size: 1rem;
+    font-size: 0.95rem;
     color: var(--text-main);
-    background-color: var(--bg-surface);
-    transition: border-color 0.2s, box-shadow 0.2s;
+    background-color: #ffffff;
+    transition: all 0.2s ease;
 }
 
 input:focus, select:focus, textarea:focus {
     outline: none;
-    border-color: var(--color-secondary);
-    box-shadow: 0 0 0 3px var(--color-secondary-light);
+    border-color: var(--color-brand);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
 }
 
 textarea {
-    min-height: 130px;
+    min-height: 110px;
     resize: vertical;
 }
 
-/* ---------- 10. Botones & Acciones ---------- */
+.form-actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1.25rem;
+    flex-wrap: wrap;
+}
+
 .btn {
-    display: inline-block;
-    padding: 0.75rem 1.4rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 0.6rem 1.2rem;
     font-family: inherit;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     font-weight: 600;
     border-radius: var(--radius-sm);
-    border: none;
+    border: 1px solid transparent;
     cursor: pointer;
     text-decoration: none;
     text-align: center;
-    transition: background-color 0.2s ease, transform 0.1s ease;
+    transition: all 0.15s ease-in-out;
 }
 
 .btn:active {
@@ -382,48 +461,88 @@ textarea {
 }
 
 .btn--primary {
-    background-color: var(--color-secondary);
-    color: var(--text-light);
+    background-color: var(--color-brand);
+    color: #ffffff;
+    box-shadow: 0 1px 2px rgba(37, 99, 235, 0.2);
 }
 
 .btn--primary:hover {
-    background-color: var(--color-primary);
-    color: #ffffff;
+    background-color: var(--color-brand-hover);
 }
 
 .btn--outline {
-    background-color: transparent;
-    border: 2px solid var(--color-secondary);
-    color: var(--color-secondary);
+    background-color: #ffffff;
+    border-color: #cbd5e1;
+    color: #334155;
 }
 
 .btn--outline:hover,
 .btn--outline.active {
-    background-color: var(--color-secondary);
-    color: var(--text-light);
+    background-color: #f1f5f9;
+    border-color: #94a3b8;
+    color: #0f172a;
+}
+
+.btn--danger-subtle {
+    background-color: #fff1f2;
+    border-color: #ffe4e6;
+    color: #e11d48;
+}
+
+.btn--danger-subtle:hover {
+    background-color: #ffe4e6;
+    border-color: #fecdd3;
+    color: #be123c;
+}
+
+.btn--sm {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.82rem;
 }
 
 .filter-group {
     display: flex;
-    gap: 0.6rem;
+    gap: 0.5rem;
     flex-wrap: wrap;
     margin-bottom: 1.5rem;
     align-items: center;
+    background-color: #f8fafc;
+    padding: 0.6rem 0.8rem;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
 }
 
 .filter-group span {
     font-weight: 600;
-    color: var(--color-primary);
-    margin-right: 0.4rem;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-right: 0.3rem;
 }
 
-/* ---------- 11. Cajas de Mensajes y Feedback JS ---------- */
+.filter-group .btn {
+    border-radius: var(--radius-full);
+    padding: 0.35rem 0.85rem;
+    font-size: 0.82rem;
+}
+
+.filter-group .btn.active {
+    background-color: var(--color-brand);
+    color: #ffffff;
+    border-color: var(--color-brand);
+}
+
+.acciones-calificaciones {
+    display: flex;
+    justify-content: center;
+    margin-top: 1.5rem;
+}
+
 .alert-box {
     margin-top: 1.25rem;
     padding: 1rem 1.25rem;
     border-radius: var(--radius-md);
-    font-size: 0.95rem;
-    font-weight: 600;
+    font-size: 0.92rem;
+    font-weight: 500;
     display: none;
 }
 
@@ -444,49 +563,50 @@ textarea {
 }
 
 .alert-box--info {
-    background-color: var(--color-secondary-light);
-    color: var(--color-primary);
+    background-color: #f0f9ff;
+    color: #0369a1;
     border: 1px solid #bae6fd;
 }
 
 .summary-card {
-    background: linear-gradient(135deg, var(--color-secondary-light), #ffffff);
-    border: 2px solid var(--color-secondary);
+    background: linear-gradient(135deg, #f0f9ff, #ffffff);
+    border: 1px solid #bae6fd;
     border-radius: var(--radius-lg);
-    padding: 1.5rem;
-    margin-top: 1.5rem;
+    padding: 1.75rem;
+    margin-top: 1.75rem;
     text-align: center;
+    box-shadow: var(--shadow-sm);
 }
 
 .summary-card h3 {
     margin-top: 0;
-    color: var(--color-primary);
+    color: #0369a1;
+    font-size: 1.15rem;
 }
 
 .summary-card .score {
-    font-size: 2.5rem;
+    font-size: 2.75rem;
     font-weight: 800;
-    color: var(--color-secondary);
-    margin: 0.5rem 0;
+    color: var(--color-brand);
+    margin: 0.4rem 0;
+    letter-spacing: -0.02em;
 }
 
-/* ---------- 12. Pie de Página ---------- */
 footer {
-    background-color: var(--color-primary);
-    color: var(--text-light);
+    background-color: #0f172a;
+    color: #94a3b8;
     text-align: center;
-    padding: 2rem 1.5rem;
-    margin-top: 3rem;
-    border-top: 4px solid var(--color-secondary);
+    padding: 2.25rem 1.5rem;
+    margin-top: 4rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 footer p {
-    margin: 0.3rem 0;
-    font-size: 0.95rem;
-    color: var(--color-secondary-light);
+    margin: 0.25rem 0;
+    font-size: 0.9rem;
+    color: #94a3b8;
 }
 
-/* ---------- 13. Diseño Responsive (Media Queries) ---------- */
 @media (max-width: 768px) {
     .header-container {
         flex-direction: column;
@@ -502,67 +622,24 @@ footer p {
         padding: 0.75rem 1rem;
         width: 100%;
         text-align: center;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
     }
 
-    .card {
-        flex: 1 1 100%;
+    .card-grid {
+        grid-template-columns: 1fr;
     }
 
     main {
         padding: 0 1rem;
-        margin: 1.2rem auto;
+        margin: 1.5rem auto;
     }
 
     section {
-        padding: 1.25rem;
-    }
-}
-
-@media (max-width: 480px) {
-    .header-title h1 {
-        font-size: 1.5rem;
+        padding: 1.5rem;
     }
 
-    section h2 {
-        font-size: 1.25rem;
+    .form-grid-2,
+    .form-grid-3 {
+        grid-template-columns: 1fr;
     }
-
-    th, td {
-        padding: 0.65rem;
-        font-size: 0.85rem;
-    }
-
-    .btn {
-        width: 100%;
-        margin-bottom: 0.4rem;
-    }
-
-    .filter-group {
-        flex-direction: column;
-        align-items: stretch;
-    }
-}
-
-/* Acciones específicas del portal en el único archivo de estilos. */
-.acciones-asignatura {
-    display: grid;
-    gap: 0.5rem;
-    margin-top: auto;
-}
-
-.acciones-asignatura .btn {
-    width: 100%;
-    margin: 0;
-}
-
-.acciones-calificaciones {
-    display: flex;
-    justify-content: center;
-    margin-top: 1.5rem;
-}
-
-.acciones-calificaciones .btn {
-    width: auto;
-    margin: 0;
 }

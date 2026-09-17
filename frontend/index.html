@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Portal académico estudiantil - Academiq Hub">
     <title>Academiq Hub | Portal del Estudiante</title>
     <link rel="stylesheet" href="styles.css">
 </head>
@@ -15,9 +16,13 @@
                 <h1>Academiq Hub</h1>
                 <p>Portal académico estudiantil</p>
             </div>
+            <div class="header-badge">
+                <span id="badge-estudiante">EST-20242089 | Activo</span>
+            </div>
         </div>
     </header>
-    <nav>
+
+    <nav aria-label="Navegación principal">
         <ul>
             <li><a href="#inicio">Inicio</a></li>
             <li><a href="#perfil">Perfil</a></li>
@@ -27,17 +32,269 @@
             <li><a href="#contacto">Contacto</a></li>
         </ul>
     </nav>
+
     <main>
-        <div id="contenido-inicio"></div>
-        <div id="contenido-perfil"></div>
-        <div id="contenido-asignaturas"></div>
-        <div id="contenido-horario"></div>
-        <div id="contenido-calificaciones"></div>
-        <div id="contenido-contacto"></div>
+        <section id="inicio" aria-labelledby="titulo-inicio">
+            <h2 id="titulo-inicio">🏠 Resumen General</h2>
+            <div class="card-grid">
+                <article class="card card--accent">
+                    <div class="card__header">
+                        <h3 class="card__title">Información del Estudiante</h3>
+                    </div>
+                    <div class="card__body">
+                        <p><strong>Nombre:</strong> <span id="resumen-nombre"></span></p>
+                        <p><strong>Código:</strong> <span id="resumen-codigo"></span></p>
+                        <p><strong>Programa:</strong> <span id="resumen-programa"></span></p>
+                    </div>
+                </article>
+
+                <article class="card card--accent">
+                    <div class="card__header">
+                        <h3 class="card__title">Estado Académico</h3>
+                    </div>
+                    <div class="card__body">
+                        <p><strong>Semestre:</strong> <span id="resumen-semestre"></span></p>
+                        <p><strong>Créditos Totales:</strong> <span id="resumen-creditos"></span></p>
+                        <p><strong>Asignaturas Registradas:</strong> <span id="resumen-asignaturas"></span></p>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <section id="perfil" aria-labelledby="titulo-perfil">
+            <h2 id="titulo-perfil">👤 Perfil del Estudiante</h2>
+            <div class="card-grid">
+                <article class="card">
+                    <div class="card__header">
+                        <h3 class="card__title">Información Registrada</h3>
+                    </div>
+                    <div class="card__body">
+                        <p><strong>Nombre Completo:</strong> <span id="perfil-info-nombre"></span></p>
+                        <p><strong>Código Estudiantil:</strong> <span id="perfil-info-codigo"></span></p>
+                        <p><strong>Programa Académico:</strong> <span id="perfil-info-programa"></span></p>
+                        <p><strong>Semestre:</strong> <span id="perfil-info-semestre"></span></p>
+                        <p><strong>Correo Institucional:</strong> <span id="perfil-info-correo"></span></p>
+                    </div>
+                </article>
+
+                <article class="card">
+                    <div class="card__header">
+                        <h3 class="card__title">Editar Perfil</h3>
+                    </div>
+                    <form id="form-perfil">
+                        <div class="form-group">
+                            <label for="perfil-nombre">Nombre Completo</label>
+                            <input type="text" id="perfil-nombre" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="perfil-programa">Programa Académico</label>
+                            <input type="text" id="perfil-programa" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="perfil-semestre">Semestre</label>
+                            <input type="number" id="perfil-semestre" min="1" max="12" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="perfil-correo">Correo Electrónico</label>
+                            <input type="email" id="perfil-correo" required>
+                        </div>
+                        <button type="submit" class="btn btn--primary">Guardar Cambios</button>
+                    </form>
+                </article>
+            </div>
+        </section>
+
+        <section id="asignaturas" aria-labelledby="titulo-asignaturas">
+            <h2 id="titulo-asignaturas">📚 Asignaturas Matriculadas</h2>
+            
+            <div class="filter-group">
+                <span>Filtrar por estado:</span>
+                <button type="button" class="btn btn--outline filtro-btn active" data-filtro="todos">Todas</button>
+                <button type="button" class="btn btn--outline filtro-btn" data-filtro="aprobada">Aprobadas</button>
+                <button type="button" class="btn btn--outline filtro-btn" data-filtro="pendiente">Pendientes</button>
+                <button type="button" class="btn btn--outline filtro-btn" data-filtro="reprobada">Reprobadas</button>
+            </div>
+
+            <div class="card-grid" id="contenedor-asignaturas"></div>
+
+            <div class="form-section-card">
+                <h3 id="titulo-form-asignatura">Agregar Nueva Asignatura</h3>
+                <form id="form-asignatura">
+                    <input type="hidden" id="curso-edit-id" value="">
+                    
+                    <div class="form-grid-2">
+                        <div class="form-group">
+                            <label for="curso-nombre">Nombre de la Asignatura</label>
+                            <input type="text" id="curso-nombre" placeholder="Ej. Desarrollo de Aplicaciones Web" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="curso-docente">Docente</label>
+                            <input type="text" id="curso-docente" placeholder="Ej. Ing. Roberto Gómez" required>
+                        </div>
+                    </div>
+
+                    <div class="form-grid-3">
+                        <div class="form-group">
+                            <label for="curso-creditos">Créditos</label>
+                            <input type="number" id="curso-creditos" min="1" max="10" placeholder="Ej. 3" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="curso-horario">Horario</label>
+                            <input type="text" id="curso-horario" placeholder="Ej. Lun. y Mié. 08:00 - 10:00" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="curso-estado">Estado</label>
+                            <select id="curso-estado" required>
+                                <option value="pendiente">Pendiente</option>
+                                <option value="aprobada">Aprobada</option>
+                                <option value="reprobada">Reprobada</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="curso-notas">5 Calificaciones (separadas por comas, rango 0.0 - 5.0)</label>
+                        <input type="text" id="curso-notas" placeholder="Ej. 4.5, 4.0, 3.8, 4.2, 4.6" required>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" id="btn-submit-asignatura" class="btn btn--primary">Guardar Asignatura</button>
+                        <button type="button" id="btn-cancel-asignatura" class="btn btn--outline" style="display: none;">Cancelar Edición</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <section id="horario" aria-labelledby="titulo-horario">
+            <h2 id="titulo-horario">📅 Horario Académico Semanal</h2>
+            
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Día</th>
+                            <th>Hora</th>
+                            <th>Asignatura</th>
+                            <th>Docente</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-horarios-body"></tbody>
+                </table>
+            </div>
+
+            <div class="form-section-card">
+                <h3 id="titulo-form-horario">Agregar Actividad al Horario</h3>
+                <form id="form-horario">
+                    <input type="hidden" id="horario-edit-id" value="">
+                    
+                    <div class="form-grid-2">
+                        <div class="form-group">
+                            <label for="horario-dia">Día</label>
+                            <select id="horario-dia" required>
+                                <option value="Lunes">Lunes</option>
+                                <option value="Martes">Martes</option>
+                                <option value="Miércoles">Miércoles</option>
+                                <option value="Jueves">Jueves</option>
+                                <option value="Viernes">Viernes</option>
+                                <option value="Sábado">Sábado</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="horario-hora">Franja Horaria</label>
+                            <input type="text" id="horario-hora" placeholder="Ej. 08:00 - 10:00" required>
+                        </div>
+                    </div>
+
+                    <div class="form-grid-2">
+                        <div class="form-group">
+                            <label for="horario-asignatura">Asignatura</label>
+                            <select id="horario-asignatura" required></select>
+                        </div>
+                        <div class="form-group">
+                            <label for="horario-docente">Docente a Cargo</label>
+                            <input type="text" id="horario-docente" placeholder="Ej. Ing. Roberto Gómez" required>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" id="btn-submit-horario" class="btn btn--primary">Guardar Horario</button>
+                        <button type="button" id="btn-cancel-horario" class="btn btn--outline" style="display: none;">Cancelar Edición</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <section id="calificaciones" aria-labelledby="titulo-calificaciones">
+            <h2 id="titulo-calificaciones">📊 Registro de Calificaciones y Promedios</h2>
+            <p>Listado de calificaciones registradas con cálculo automático del promedio por materia y estado aprobatorio (mínimo 3.0):</p>
+
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Asignatura</th>
+                            <th class="text-center">Nota 1</th>
+                            <th class="text-center">Nota 2</th>
+                            <th class="text-center">Nota 3</th>
+                            <th class="text-center">Nota 4</th>
+                            <th class="text-center">Nota 5</th>
+                            <th class="text-center">Promedio Final</th>
+                            <th class="text-center">Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-calificaciones-body"></tbody>
+                </table>
+            </div>
+
+            <div class="acciones-calificaciones">
+                <button type="button" id="btn-promedio" class="btn btn--primary">Calcular Promedio General del Semestre</button>
+            </div>
+            <div id="resultado-promedio-general"></div>
+        </section>
+
+        <section id="contacto" aria-labelledby="titulo-contacto">
+            <h2 id="titulo-contacto">📩 Contacto y Solicitudes Académicas</h2>
+            <p>Envía tu solicitud o inquietud académica completando el siguiente formulario:</p>
+
+            <form id="form-solicitud" novalidate>
+                <div class="form-group">
+                    <label for="contacto-nombre">Nombre Completo (*)</label>
+                    <input type="text" id="contacto-nombre" placeholder="Ingresa tu nombre completo" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="contacto-email">Correo Electrónico (*)</label>
+                    <input type="email" id="contacto-email" placeholder="ejemplo@correo.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="tipo-solicitud">Tipo de Solicitud (*)</label>
+                    <select id="tipo-solicitud" required>
+                        <option value="">-- Selecciona una categoría --</option>
+                        <option value="Revisión de calificaciones">Revisión de calificaciones</option>
+                        <option value="Solicitud de tutoría">Solicitud de tutoría</option>
+                        <option value="Homologación o cancelación de materia">Homologación o cancelación de materia</option>
+                        <option value="Certificado de estudio">Certificado de estudio</option>
+                        <option value="Otra consulta académica">Otra consulta académica</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="contacto-mensaje">Descripción del Mensaje (*)</label>
+                    <textarea id="contacto-mensaje" placeholder="Describe detalladamente el motivo de tu solicitud..." required></textarea>
+                </div>
+
+                <button type="submit" class="btn btn--primary" style="width: 100%;">Enviar Solicitud</button>
+                <div id="alerta-contacto" class="alert-box" aria-live="polite"></div>
+            </form>
+        </section>
     </main>
+
     <footer>
-        <p>© <span class="anio-actual"></span> Academiq Hub</p>
+        <p>© <span class="anio-actual"></span> Academiq Hub - Portal Académico Estudiantil</p>
     </footer>
+
     <script src="app.js"></script>
 </body>
 
