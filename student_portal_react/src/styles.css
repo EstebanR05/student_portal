@@ -421,6 +421,33 @@ textarea {
   font-weight: 500;
 }
 
+.error {
+  color: #dc2626;
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin: 0.35rem 0 0 0;
+}
+
+.success-message {
+  margin-top: 1.5rem;
+  padding: 1.25rem 1.5rem;
+  border-radius: var(--radius-md);
+  background-color: var(--status-approved-bg);
+  color: var(--status-approved-text);
+  border: 1px solid var(--status-approved-border);
+}
+
+.success-message strong {
+  display: block;
+  font-size: 1.05rem;
+  margin-bottom: 0.35rem;
+}
+
+.success-message p {
+  margin: 0;
+  font-size: 0.92rem;
+}
+
 .alert-box--success {
   background-color: var(--status-approved-bg);
   color: var(--status-approved-text);

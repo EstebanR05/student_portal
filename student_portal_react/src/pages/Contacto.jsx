@@ -1,116 +1,148 @@
 import { useState } from "react";
 
 function Contacto() {
-  const [form, setForm] = useState({
+  const [formulario, setFormulario] = useState({
     nombre: "",
-    email: "",
-    tipo: "",
+    correo: "",
+    telefono: "",
+    asunto: "",
     mensaje: ""
   });
 
-  const [alerta, setAlerta] = useState(null);
+  const [errores, setErrores] = useState({});
+  const [enviado, setEnviado] = useState(false);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  function manejarCambio(evento) {
+    const { name, value } = evento.target;
+    setFormulario((actual) => ({
+      ...actual,
+      [name]: value
+    }));
+    setEnviado(false);
+  }
 
-    if (!form.nombre.trim() || !form.email.trim() || !form.tipo || !form.mensaje.trim()) {
-      setAlerta({
-        tipo: "error",
-        mensaje: "⚠️ Por favor, completa todos los campos obligatorios."
-      });
+  function validar() {
+    const nuevosErrores = {};
+
+    if (!formulario.nombre.trim()) {
+      nuevosErrores.nombre = "El nombre es obligatorio";
+    }
+
+    if (!formulario.correo.trim()) {
+      nuevosErrores.correo = "El correo es obligatorio";
+    } else if (!formulario.correo.includes("@")) {
+      nuevosErrores.correo = "Correo no válido";
+    }
+
+    if (!formulario.telefono.trim()) {
+      nuevosErrores.telefono = "El teléfono es obligatorio";
+    }
+
+    if (!formulario.asunto.trim()) {
+      nuevosErrores.asunto = "El asunto es obligatorio";
+    }
+
+    if (!formulario.mensaje.trim()) {
+      nuevosErrores.mensaje = "El mensaje no puede estar vacío";
+    }
+
+    return nuevosErrores;
+  }
+
+  function manejarEnvio(evento) {
+    evento.preventDefault();
+    const nuevosErrores = validar();
+
+    if (Object.keys(nuevosErrores).length > 0) {
+      setErrores(nuevosErrores);
       return;
     }
 
-    if (!form.email.includes("@") || !form.email.includes(".")) {
-      setAlerta({
-        tipo: "error",
-        mensaje: "⚠️ Ingresa un correo electrónico con formato válido."
-      });
-      return;
-    }
-
-    setAlerta({
-      tipo: "success",
-      mensaje: `✅ ¡Solicitud recibida! Estimado/a ${form.nombre}, tu requerimiento de tipo "${form.tipo}" ha sido registrado correctamente.`
-    });
-
-    setForm({
-      nombre: "",
-      email: "",
-      tipo: "",
-      mensaje: ""
-    });
-  };
+    setErrores({});
+    setEnviado(true);
+  }
 
   return (
     <main className="main-content">
       <section className="section-block">
-        <h2>📩 Formulario de Contacto</h2>
+        <h2>📩 Formulario de Atención y Contacto</h2>
         <p>
-          Si tienes alguna duda o solicitud académica, completa los campos a continuación para ponerte en
-          contacto con nosotros:
+          Completa el siguiente formulario para radicar tus consultas, solicitudes de tutoría o soporte técnico:
         </p>
 
-        <form onSubmit={handleSubmit} noValidate>
+        <form onSubmit={manejarEnvio} noValidate>
           <div className="form-group">
-            <label htmlFor="nombre">Nombre Completo (*)</label>
+            <label htmlFor="nombre">Nombre completo</label>
             <input
-              type="text"
               id="nombre"
-              value={form.nombre}
-              onChange={(e) => setForm({ ...form, nombre: e.target.value })}
+              name="nombre"
+              type="text"
+              value={formulario.nombre}
+              onChange={manejarCambio}
               placeholder="Ingresa tu nombre completo"
-              required
             />
+            {errores.nombre && <p className="error">{errores.nombre}</p>}
           </div>
 
           <div className="form-group">
-            <label htmlFor="email">Correo Electrónico (*)</label>
+            <label htmlFor="correo">Correo electrónico</label>
             <input
+              id="correo"
+              name="correo"
               type="email"
-              id="email"
-              value={form.email}
-              onChange={(e) => setForm({ ...form, email: e.target.value })}
-              placeholder="ejemplo@correo.com"
-              required
+              value={formulario.correo}
+              onChange={manejarCambio}
+              placeholder="tu.correo@universidad.edu.co"
             />
+            {errores.correo && <p className="error">{errores.correo}</p>}
           </div>
 
           <div className="form-group">
-            <label htmlFor="tipo">Tipo de Solicitud (*)</label>
-            <select
-              id="tipo"
-              value={form.tipo}
-              onChange={(e) => setForm({ ...form, tipo: e.target.value })}
-              required
-            >
-              <option value="">-- Selecciona una categoría --</option>
-              <option value="Información Académica">Información Académica</option>
-              <option value="Soporte de Plataforma">Soporte de Plataforma</option>
-              <option value="Revisión de Calificaciones">Revisión de Calificaciones</option>
-              <option value="Solicitud de Tutoría">Solicitud de Tutoría</option>
-              <option value="Otra Consulta">Otra Consulta</option>
-            </select>
+            <label htmlFor="telefono">Teléfono de contacto</label>
+            <input
+              id="telefono"
+              name="telefono"
+              type="tel"
+              value={formulario.telefono}
+              onChange={manejarCambio}
+              placeholder="Ej. 3001234567"
+            />
+            {errores.telefono && <p className="error">{errores.telefono}</p>}
           </div>
 
           <div className="form-group">
-            <label htmlFor="mensaje">Descripción del Mensaje (*)</label>
+            <label htmlFor="asunto">Asunto de la solicitud</label>
+            <input
+              id="asunto"
+              name="asunto"
+              type="text"
+              value={formulario.asunto}
+              onChange={manejarCambio}
+              placeholder="Ej. Solicitud de tutoría académica"
+            />
+            {errores.asunto && <p className="error">{errores.asunto}</p>}
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="mensaje">Descripción del mensaje</label>
             <textarea
               id="mensaje"
-              value={form.mensaje}
-              onChange={(e) => setForm({ ...form, mensaje: e.target.value })}
-              placeholder="Describe detalladamente el motivo de tu consulta..."
-              required
+              name="mensaje"
+              value={formulario.mensaje}
+              onChange={manejarCambio}
+              placeholder="Describe detalladamente tu solicitud..."
             ></textarea>
+            {errores.mensaje && <p className="error">{errores.mensaje}</p>}
           </div>
 
           <button type="submit" className="btn btn--primary" style={{ width: "100%" }}>
-            Enviar Mensaje
+            Enviar información
           </button>
 
-          {alerta && (
-            <div className={`alert-box alert-box--${alerta.tipo}`}>
-              {alerta.mensaje}
+          {enviado && (
+            <div className="success-message">
+              <strong>¡Información enviada correctamente!</strong>
+              <p>Estimado/a {formulario.nombre}, tu mensaje sobre "{formulario.asunto}" ha sido registrado con éxito.</p>
             </div>
           )}
         </form>
