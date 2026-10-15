@@ -73,7 +73,7 @@ function Contacto() {
           automáticamente en <strong>localStorage</strong> mediante <code>useEffect()</code> para no perderse al recargar la página:
         </p>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "2rem", marginTop: "1.5rem" }}>
+        <div className="contacto-layout">
           {/* Formulario Principal */}
           <div>
             <form onSubmit={manejarEnvio} noValidate style={{ maxWidth: "100%", margin: 0 }}>
@@ -154,7 +154,7 @@ function Contacto() {
                 {errores.mensaje && <p className="error">{errores.mensaje}</p>}
               </div>
 
-              <div style={{ display: "flex", gap: "0.8rem", marginTop: "1rem" }}>
+              <div className="contacto-acciones">
                 <button type="submit" className="btn btn--primary" style={{ flex: 1 }}>
                   Guardar y Enviar Solicitud
                 </button>

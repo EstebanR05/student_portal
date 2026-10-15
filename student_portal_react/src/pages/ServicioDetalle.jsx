@@ -91,7 +91,7 @@ function ServicioDetalle() {
             </div>
           </div>
 
-          <div className="card-actions" style={{ display: "flex", gap: "0.8rem", marginTop: "2rem", flexWrap: "wrap" }}>
+          <div className="detail-actions">
             {estaInscrita ? (
               <button
                 type="button"

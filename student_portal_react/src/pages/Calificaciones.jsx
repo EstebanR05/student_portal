@@ -32,6 +32,8 @@ function Calificaciones() {
           aprobatorio (mínimo 3.0):
         </p>
 
+        <p className="table-hint">👉 Desliza horizontalmente la tabla para ver todas las notas</p>
+
         <div className="table-responsive">
           <table>
             <thead>

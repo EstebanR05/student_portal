@@ -115,7 +115,9 @@ function Servicios() {
             </div>
           ) : (
             <>
-              <div className="table-responsive" style={{ marginTop: "1rem" }}>
+              <p className="table-hint">👉 Desliza horizontalmente para ver las columnas de la tabla</p>
+
+              <div className="table-responsive" style={{ marginTop: "0.5rem" }}>
                 <table>
                   <thead>
                     <tr>
@@ -152,7 +154,7 @@ function Servicios() {
                 </table>
               </div>
 
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "1.5rem", flexWrap: "wrap", gap: "1rem", paddingTop: "1rem", borderTop: "1px dashed var(--border-color)" }}>
+              <div className="matricula-summary">
                 <div>
                   <span style={{ fontSize: "0.95rem", color: "var(--text-muted)", marginRight: "1rem" }}>
                     Total Asignaturas: <strong>{cantidadInscripciones}</strong>

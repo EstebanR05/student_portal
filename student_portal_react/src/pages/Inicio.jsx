@@ -27,7 +27,7 @@ function Inicio() {
   return (
     <main className="main-content">
       <section className="section-block">
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "1rem" }}>
+        <div className="inicio-header">
           <div>
             <p className="badge badge--approved" style={{ marginBottom: "0.4rem" }}>
               CORTE 2 · APLICACIONES WEB
@@ -35,7 +35,7 @@ function Inicio() {
             <h2 style={{ margin: 0 }}>🏠 Portal Académico del Estudiante</h2>
           </div>
 
-          <div style={{ display: "flex", gap: "0.6rem" }}>
+          <div className="inicio-acciones">
             <Link to="/servicios" className="btn btn--primary btn--sm">
               Explorar Asignaturas
             </Link>
