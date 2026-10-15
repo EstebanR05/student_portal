@@ -5,6 +5,7 @@ import Footer from "./components/Footer";
 import Inicio from "./pages/Inicio";
 import Nosotros from "./pages/Nosotros";
 import Servicios from "./pages/Servicios";
+import ServicioDetalle from "./pages/ServicioDetalle";
 import Calificaciones from "./pages/Calificaciones";
 import Contacto from "./pages/Contacto";
 import NotFound from "./pages/NotFound";
@@ -19,6 +20,7 @@ function App() {
         <Route path="/" element={<Inicio />} />
         <Route path="/nosotros" element={<Nosotros />} />
         <Route path="/servicios" element={<Servicios />} />
+        <Route path="/servicios/:id" element={<ServicioDetalle />} />
         <Route path="/calificaciones" element={<Calificaciones />} />
         <Route path="/contacto" element={<Contacto />} />
         <Route path="*" element={<NotFound />} />

@@ -1,4 +1,16 @@
-function ServiceCard({ titulo, descripcion, docente, creditos, estado, categoria }) {
+import { Link } from "react-router-dom";
+
+function ServiceCard({
+  id,
+  titulo,
+  descripcion,
+  docente,
+  creditos,
+  estado,
+  categoria,
+  onInscribir,
+  estaInscrita = false
+}) {
   const badgeClase =
     estado === "aprobada" || estado === "disponible"
       ? "badge--approved"
@@ -34,6 +46,30 @@ function ServiceCard({ titulo, descripcion, docente, creditos, estado, categoria
             </div>
           )}
         </div>
+      </div>
+
+      <div className="card-actions" style={{ display: "flex", gap: "0.5rem", marginTop: "1rem", flexWrap: "wrap" }}>
+        {id && (
+          <Link to={`/servicios/${id}`} className="btn btn--outline btn--sm">
+            Ver detalle
+          </Link>
+        )}
+
+        {onInscribir && (
+          estaInscrita ? (
+            <button type="button" className="btn btn--outline btn--sm" disabled style={{ opacity: 0.8 }}>
+              ✓ Matriculada
+            </button>
+          ) : (
+            <button
+              type="button"
+              className="btn btn--primary btn--sm"
+              onClick={() => onInscribir({ id, titulo, docente, creditos, estado, categoria })}
+            >
+              ➕ Matricular
+            </button>
+          )
+        )}
       </div>
     </article>
   );
