@@ -9,6 +9,21 @@ const formularioInicial = {
   direccion: ""
 };
 
+function cargarFormularioInicial() {
+  const formularioGuardado = localStorage.getItem("formulario");
+
+  if (!formularioGuardado) {
+    return formularioInicial;
+  }
+
+  try {
+    return JSON.parse(formularioGuardado);
+  } catch (error) {
+    console.error("No se pudo recuperar el formulario:", error);
+    return formularioInicial;
+  }
+}
+
 function cargarCarritoInicial() {
   const carritoGuardado = localStorage.getItem("carrito");
 
@@ -25,7 +40,13 @@ function cargarCarritoInicial() {
 }
 
 function FormularioProvider({ children }) {
-  const [formulario, setFormulario] = useState(formularioInicial);
+  // El formulario se recupera desde localStorage al iniciar la aplicación.
+  const [formulario, setFormulario] = useState(cargarFormularioInicial);
+
+  // Cada cambio del formulario se sincroniza automáticamente con localStorage.
+  useEffect(() => {
+    localStorage.setItem("formulario", JSON.stringify(formulario));
+  }, [formulario]);
 
   // El carrito se recupera desde localStorage al iniciar la aplicación.
   const [carrito, setCarrito] = useState(cargarCarritoInicial);
