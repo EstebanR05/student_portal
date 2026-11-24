@@ -2,15 +2,23 @@ import { useState } from "react";
 import { usePortal } from "../context/PortalContext";
 import Modal from "../components/Modal";
 import Toast from "../components/Toast";
+import { validarHorariosSolicitud } from "../utils/horarios";
 
 function AdminMatriculas() {
-  const { matriculas, resolverSolicitudMatricula } = usePortal();
+  const { matriculas, materias, resolverSolicitudMatricula } = usePortal();
   const [seleccionada, setSeleccionada] = useState(null);
   const [toast, setToast] = useState({ mensaje: "", tipo: "success" });
 
+  const validacion = seleccionada ? validarHorariosSolicitud(seleccionada.materias, materias) : null;
+  const horariosInvalidos = validacion && (validacion.cruces.length > 0 || validacion.sinHorarioValido.length > 0);
+
   const manejarResolucion = (estado) => {
     if (!seleccionada) return;
-    resolverSolicitudMatricula(seleccionada.id, estado);
+    const resultado = resolverSolicitudMatricula(seleccionada.id, estado);
+    if (!resultado.ok) {
+      setToast({ mensaje: "No se pudo aprobar la solicitud. Revisa los horarios de las materias.", tipo: "error" });
+      return;
+    }
     setToast({
       mensaje: `Solicitud de ${seleccionada.estudianteNombre} marcada como ${estado}.`,
       tipo: estado === "Aprobada" ? "success" : "warning"
@@ -116,6 +124,22 @@ function AdminMatriculas() {
               ))}
             </ul>
 
+            {seleccionada.estado === "Pendiente" && horariosInvalidos && (
+              <div className="alert-box alert-box--error" role="alert" style={{ marginTop: "1rem" }}>
+                <strong>No se puede aprobar la solicitud: revisa los horarios.</strong>
+                <ul>
+                  {validacion.cruces.map(({ materiaA, materiaB, diasComunes }) => (
+                    <li key={`${materiaA.id}-${materiaB.id}`}>
+                      {materiaA.titulo} ({materiaA.horario}) se cruza con {materiaB.titulo} ({materiaB.horario}) el {diasComunes.join(", ")}.
+                    </li>
+                  ))}
+                  {validacion.sinHorarioValido.map((materia) => (
+                    <li key={materia.id}>{materia.titulo}: horario ausente o inválido.</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
             {seleccionada.observaciones && (
               <p style={{ marginTop: "0.85rem", fontSize: "0.9rem", color: "var(--text-muted)" }}>
                 <strong>Observaciones:</strong> {seleccionada.observaciones}
@@ -136,6 +160,7 @@ function AdminMatriculas() {
                     type="button"
                     className="btn btn--primary"
                     onClick={() => manejarResolucion("Aprobada")}
+                    disabled={Boolean(horariosInvalidos)}
                   >
                     Aprobar
                   </button>

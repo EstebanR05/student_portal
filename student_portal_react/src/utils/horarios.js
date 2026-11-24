@@ -74,3 +74,17 @@ export function detectarCrucesHorario(materias = []) {
 
   return { cruces, idsEnCruce };
 }
+
+export function validarHorariosSolicitud(materiasSolicitadas = [], catalogo = []) {
+  const materias = materiasSolicitadas.map((solicitada) => {
+    const actual = catalogo.find((materia) => materia.id === solicitada.id);
+    return actual ? { ...solicitada, ...actual } : solicitada;
+  });
+  const sinHorarioValido = materias.filter((materia) => {
+    const { dias, inicioMin, finMin } = parsearHorarioClase(materia.horario);
+    const horas = String(materia.horario || "").match(/(\d{2}):(\d{2})\s*-\s*(\d{2}):(\d{2})/);
+    return !dias.length || !horas || Number(horas[1]) > 23 || Number(horas[2]) > 59 ||
+      Number(horas[3]) > 23 || Number(horas[4]) > 59 || inicioMin >= finMin;
+  });
+  return { ...detectarCrucesHorario(materias), sinHorarioValido };
+}

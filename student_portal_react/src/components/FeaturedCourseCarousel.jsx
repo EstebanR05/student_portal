@@ -25,7 +25,6 @@ function FeaturedCourseCarousel({ cursos: cursosProp }) {
   if (cursos.length === 0) return null;
 
   const indiceSeguro = indice < cursos.length ? indice : 0;
-  const curso = cursos[indiceSeguro];
 
   const irAnterior = () => {
     setIndice((actual) => (actual - 1 + cursos.length) % cursos.length);
@@ -42,35 +41,16 @@ function FeaturedCourseCarousel({ cursos: cursosProp }) {
           <span className="badge badge--pending">CATÁLOGO DESTACADO</span>
           <h3 className="carousel-heading">Asignaturas del Periodo</h3>
         </div>
-        <div className="carousel-controls">
-          <button
-            type="button"
-            className="btn btn--outline btn--sm"
-            onClick={irAnterior}
-            aria-label="Curso anterior"
-          >
-            ◀ Anterior
-          </button>
-          <button
-            type="button"
-            className="btn btn--outline btn--sm"
-            onClick={() => setPausado((prev) => !prev)}
-            aria-pressed={pausado}
-          >
-            {pausado ? "▶ Reanudar" : "⏸ Pausar"}
-          </button>
-          <button
-            type="button"
-            className="btn btn--outline btn--sm"
-            onClick={irSiguiente}
-            aria-label="Siguiente curso"
-          >
-            Siguiente ▶
-          </button>
-        </div>
+
       </div>
 
-      <div key={curso.id} className="carousel-slide">
+      <div className="carousel-slides">
+        {cursos.map((curso, idx) => {
+          let posicion = Math.sign(idx - indiceSeguro);
+          if (cursos.length > 2 && indiceSeguro === 0 && idx === cursos.length - 1) posicion = -1;
+          if (cursos.length > 2 && indiceSeguro === cursos.length - 1 && idx === 0) posicion = 1;
+          return (
+      <div key={curso.id} className={`carousel-slide ${idx === indiceSeguro ? "carousel-slide--active" : ""}`} style={{ "--posicion": posicion }} aria-hidden={idx !== indiceSeguro}>
         <div className="carousel-media">
           {curso.imagen ? (
             <img
@@ -103,6 +83,7 @@ function FeaturedCourseCarousel({ cursos: cursosProp }) {
             <Link
               to={esAdmin ? "/admin/materias" : "/semestres"}
               className="btn btn--primary btn--sm"
+              tabIndex={idx === indiceSeguro ? undefined : -1}
             >
               {esAdmin ? "Gestionar Materias →" : "Ir a Semestres →"}
             </Link>
@@ -110,7 +91,11 @@ function FeaturedCourseCarousel({ cursos: cursosProp }) {
         </div>
       </div>
 
-      <div className="carousel-dots" role="tablist" aria-label="Seleccionar asignatura">
+          );
+        })}
+      </div>
+
+      <div className="carousel-dots" role="group" aria-label="Seleccionar asignatura">
         {cursos.map((item, idx) => (
           <button
             key={item.id}
@@ -122,6 +107,33 @@ function FeaturedCourseCarousel({ cursos: cursosProp }) {
           />
         ))}
       </div>
+
+        <div className="carousel-controls">
+          <button
+            type="button"
+            className="btn btn--outline btn--sm"
+            onClick={irAnterior}
+            aria-label="Curso anterior"
+          >
+            ◀ Anterior
+          </button>
+          <button
+            type="button"
+            className="btn btn--outline btn--sm"
+            onClick={() => setPausado((prev) => !prev)}
+            aria-pressed={pausado}
+          >
+            {pausado ? "▶ Reanudar" : "⏸ Pausar"}
+          </button>
+          <button
+            type="button"
+            className="btn btn--outline btn--sm"
+            onClick={irSiguiente}
+            aria-label="Siguiente curso"
+          >
+            Siguiente ▶
+          </button>
+        </div>
     </section>
   );
 }

@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
+import { validarHorariosSolicitud } from "../utils/horarios";
 import {
   CARRERAS_INICIALES,
   CONFIG_INICIAL,
@@ -265,7 +266,14 @@ export function PortalProvider({ children }) {
 
   const resolverSolicitudMatricula = (id, nuevoEstado) => {
     const solicitud = matriculas.find((m) => m.id === id);
-    if (!solicitud) return;
+    if (!solicitud || solicitud.estado !== "Pendiente") return { ok: false };
+
+    if (nuevoEstado === "Aprobada") {
+      const validacion = validarHorariosSolicitud(solicitud.materias, materias);
+      if (validacion.cruces.length || validacion.sinHorarioValido.length) {
+        return { ok: false, ...validacion };
+      }
+    }
 
     setMatriculas((prev) =>
       prev.map((m) => (m.id === id ? { ...m, estado: nuevoEstado } : m))
@@ -307,6 +315,7 @@ export function PortalProvider({ children }) {
         })
       );
     }
+    return { ok: true };
   };
 
   return (

@@ -1,9 +1,42 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { usePortal } from "../context/PortalContext";
 import BackButton from "../components/BackButton";
 import Tabs from "../components/Tabs";
 import Toast from "../components/Toast";
+
+export function GradeInput({ valor, etiqueta, onGuardar }) {
+  const [texto, setTexto] = useState(() => String(valor).replace(".", ","));
+  const [editando, setEditando] = useState(false);
+
+  useEffect(() => {
+    if (!editando) setTexto(String(valor).replace(".", ","));
+  }, [valor, editando]);
+
+  const cambiar = (event) => {
+    const siguiente = event.target.value;
+    // Admitir un campo vacío durante la edición y notas de 0 a 5 con hasta dos decimales.
+    if (!/^(?:[0-4](?:,\d{0,2})?|5(?:,0{0,2})?)?$/.test(siguiente)) return;
+    setTexto(siguiente);
+    if (siguiente !== "") onGuardar(Number(siguiente.replace(",", ".")));
+  };
+
+  return (
+    <input
+      type="text"
+      inputMode="decimal"
+      aria-label={etiqueta}
+      className="grade-input"
+      value={texto}
+      onFocus={() => setEditando(true)}
+      onChange={cambiar}
+      onBlur={() => {
+        setEditando(false);
+        setTexto(String(valor).replace(".", ","));
+      }}
+    />
+  );
+}
 
 function AdminEstudianteNotas() {
   const { estudianteId } = useParams();
@@ -38,8 +71,7 @@ function AdminEstudianteNotas() {
     );
   }
 
-  const manejarCambioNota = (semestreNumero, notaActual, campo, valorRaw) => {
-    const valor = Math.max(0, Math.min(5, Number(valorRaw) || 0));
+  const manejarCambioNota = (semestreNumero, notaActual, campo, valor) => {
     const nuevasNotas = {
       nota1: notaActual.nota1,
       nota2: notaActual.nota2,
@@ -83,45 +115,24 @@ function AdminEstudianteNotas() {
                     <td>{mat?.codigo || n.materiaId}</td>
                     <td className="font-bold">{mat?.titulo || "Asignatura"}</td>
                     <td>
-                      <input
-                        type="number"
-                        step="0.1"
-                        min="0"
-                        max="5"
-                        aria-label={`Nota 1 ${mat?.titulo || n.materiaId}`}
-                        className="grade-input"
-                        value={n.nota1}
-                        onChange={(e) =>
-                          manejarCambioNota(sem.semestreNumero, n, "nota1", e.target.value)
-                        }
+                      <GradeInput
+                        valor={n.nota1}
+                        etiqueta={`Nota 1 ${mat?.titulo || n.materiaId}`}
+                        onGuardar={(valor) => manejarCambioNota(sem.semestreNumero, n, "nota1", valor)}
                       />
                     </td>
                     <td>
-                      <input
-                        type="number"
-                        step="0.1"
-                        min="0"
-                        max="5"
-                        aria-label={`Nota 2 ${mat?.titulo || n.materiaId}`}
-                        className="grade-input"
-                        value={n.nota2}
-                        onChange={(e) =>
-                          manejarCambioNota(sem.semestreNumero, n, "nota2", e.target.value)
-                        }
+                      <GradeInput
+                        valor={n.nota2}
+                        etiqueta={`Nota 2 ${mat?.titulo || n.materiaId}`}
+                        onGuardar={(valor) => manejarCambioNota(sem.semestreNumero, n, "nota2", valor)}
                       />
                     </td>
                     <td>
-                      <input
-                        type="number"
-                        step="0.1"
-                        min="0"
-                        max="5"
-                        aria-label={`Nota 3 ${mat?.titulo || n.materiaId}`}
-                        className="grade-input"
-                        value={n.nota3}
-                        onChange={(e) =>
-                          manejarCambioNota(sem.semestreNumero, n, "nota3", e.target.value)
-                        }
+                      <GradeInput
+                        valor={n.nota3}
+                        etiqueta={`Nota 3 ${mat?.titulo || n.materiaId}`}
+                        onGuardar={(valor) => manejarCambioNota(sem.semestreNumero, n, "nota3", valor)}
                       />
                     </td>
                     <td className="font-bold">{promedio.toFixed(2)}</td>

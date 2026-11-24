@@ -990,18 +990,36 @@ footer p {
   display: flex;
   gap: 0.5rem;
   flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.carousel-slides {
+  display: grid;
+  overflow: hidden;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
 }
 
 .carousel-slide {
+  grid-area: 1 / 1;
   display: grid;
   grid-template-columns: 240px 1fr;
   gap: 1.5rem;
   align-items: center;
-  background-color: var(--bg-surface);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
   padding: 1.25rem;
-  animation: page-appear 0.3s ease-out both;
+  background-color: var(--bg-surface);
+  visibility: hidden;
+  transform: translateX(calc(var(--posicion) * 100%));
+  transition: transform 1s cubic-bezier(0.22, 1, 0.36, 1), visibility 0s linear 1s;
+  pointer-events: none;
+}
+
+.carousel-slide--active {
+  visibility: visible;
+  transition: transform 1s cubic-bezier(0.22, 1, 0.36, 1), visibility 0s;
+  pointer-events: auto;
 }
 
 .carousel-media {
@@ -2433,6 +2451,17 @@ footer p {
   flex-direction: column;
   gap: 0.25rem;
   box-shadow: var(--shadow-xs);
+}
+
+.kpi-grid .kpi-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .kpi-grid .kpi-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 14px rgba(15, 23, 42, 0.09);
+  }
 }
 
 .kpi-card--blue {

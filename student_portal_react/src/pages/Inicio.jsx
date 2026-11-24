@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { usePortal } from "../context/PortalContext";
@@ -13,13 +12,6 @@ const PROXIMOS_EVENTOS = [
 function Inicio() {
   const { usuario } = useAuth();
   const { config, materias, carreras, estudiantes, matriculas, obtenerMateriasQuedadas } = usePortal();
-  const [mensajeVisible, setMensajeVisible] = useState(false);
-
-  useEffect(() => {
-    const timer = setTimeout(() => setMensajeVisible(true), 80);
-    return () => clearTimeout(timer);
-  }, []);
-
   const esAdmin = usuario?.rol === "administrador";
   const estudianteActual = !esAdmin
     ? estudiantes.find((e) => e.id === usuario?.id)
@@ -90,21 +82,6 @@ function Inicio() {
                   : carreraEstudiante?.nombre || usuario?.programa || "Ingeniería en Sistemas"}
               </p>
 
-              <div className={`animated-message dashboard-notice ${mensajeVisible ? "is-visible" : ""}`}>
-                <span>
-                  ✨ <strong>{esAdmin ? "Gestión Activa:" : "Periodo Activo:"}</strong>{" "}
-                  {esAdmin
-                    ? `${materias.length} materias, ${carreras.length} carreras y ${matriculasPendientes} matrícula(s) pendiente(s).`
-                    : `Límite vigente de ${config.maxCreditosSemestre} créditos por semestre.`}
-                </span>
-                <button
-                  type="button"
-                  className="btn btn--outline btn--sm"
-                  onClick={() => setMensajeVisible((prev) => !prev)}
-                >
-                  {mensajeVisible ? "Ocultar aviso" : "Mostrar aviso"}
-                </button>
-              </div>
             </div>
 
             <div className="dashboard-hero-art" aria-hidden="true">
