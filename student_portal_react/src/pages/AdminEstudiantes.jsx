@@ -1,5 +1,7 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { usePortal } from "../context/PortalContext";
+import Dropdown from "../components/Dropdown";
 
 function obtenerIniciales(nombre = "") {
   const partes = nombre.trim().split(/\s+/).filter(Boolean);
@@ -11,17 +13,37 @@ function obtenerIniciales(nombre = "") {
 function AdminEstudiantes() {
   const { estudiantes, carreras } = usePortal();
   const navigate = useNavigate();
+  const [carreraFiltro, setCarreraFiltro] = useState("todas");
+
+  const opcionesFiltro = [
+    { value: "todas", label: "Todas las carreras" },
+    ...carreras.map((c) => ({ value: c.id, label: c.nombre }))
+  ];
+
+  const estudiantesFiltrados =
+    carreraFiltro === "todas"
+      ? estudiantes
+      : estudiantes.filter((e) => e.carreraId === carreraFiltro);
 
   return (
     <main className="main-content page-enter">
       <div className="section-block">
-        <h2>Estudiantes registrados</h2>
-        <p style={{ marginTop: "0.25rem", color: "var(--text-muted)" }}>
-          Selecciona un estudiante para consultar y editar sus calificaciones por semestre.
-        </p>
+        <div className="dashboard-section-head">
+          <div>
+            <h2>Estudiantes registrados</h2>
+            <p style={{ marginTop: "0.25rem", color: "var(--text-muted)" }}>
+              Selecciona un estudiante para consultar y editar sus calificaciones por semestre.
+            </p>
+          </div>
+          <Dropdown
+            label="Filtrar por carrera"
+            opciones={opcionesFiltro}
+            onSeleccionar={(op) => setCarreraFiltro(op.value)}
+          />
+        </div>
 
         <div className="card-grid" style={{ marginTop: "1.25rem" }}>
-          {estudiantes.map((est) => {
+          {estudiantesFiltrados.map((est) => {
             const carrera = carreras.find((c) => c.id === est.carreraId);
             return (
               <article
