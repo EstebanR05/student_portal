@@ -51,6 +51,15 @@ export function AuthProvider({ children }) {
     return { ok: true, usuario: usuarioPublico };
   };
 
+  const actualizarUsuarioSesion = (datos) => {
+    setUsuario((prev) => {
+      if (!prev) return prev;
+      const actualizado = { ...prev, ...datos };
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(actualizado));
+      return actualizado;
+    });
+  };
+
   const cerrarSesion = () => {
     sessionStorage.removeItem(STORAGE_KEY);
     setUsuario(null);
@@ -61,6 +70,7 @@ export function AuthProvider({ children }) {
       value={{
         usuario,
         iniciarSesion,
+        actualizarUsuarioSesion,
         cerrarSesion,
         autenticado: Boolean(usuario)
       }}

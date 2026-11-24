@@ -1,23 +1,18 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { FormularioContext } from "../context/FormularioContext";
 import { useAuth } from "../context/AuthContext";
+import { usePortal } from "../context/PortalContext";
 import FeaturedCourseCarousel from "../components/FeaturedCourseCarousel";
 
 const PROXIMOS_EVENTOS = [
   { dia: "Lun 24", titulo: "Inicio de clases", detalle: "Apertura oficial del semestre académico" },
-  { dia: "Mié 26", titulo: "Revisión de solicitudes", detalle: "Comité de programa y homologaciones" },
+  { dia: "Mié 26", titulo: "Revisión de matrículas", detalle: "Comité de programa y coordinación" },
   { dia: "Vie 28", titulo: "Cierre de registro", detalle: "Fecha límite de matrícula y ajustes" }
 ];
 
 function Inicio() {
   const { usuario } = useAuth();
-  const {
-    catalogo,
-    solicitudes,
-    totalCreditos,
-    cantidadInscripciones
-  } = useContext(FormularioContext);
+  const { config, materias, carreras, estudiantes, matriculas, obtenerMateriasQuedadas } = usePortal();
   const [mensajeVisible, setMensajeVisible] = useState(false);
 
   useEffect(() => {
@@ -26,132 +21,57 @@ function Inicio() {
   }, []);
 
   const esAdmin = usuario?.rol === "administrador";
-  const nombreUsuario = usuario?.nombre || "Usuario";
+  const estudianteActual = !esAdmin
+    ? estudiantes.find((e) => e.id === usuario?.id)
+    : null;
+  const carreraEstudiante = estudianteActual
+    ? carreras.find((c) => c.id === estudianteActual.carreraId)
+    : null;
+  const nombreUsuario = estudianteActual?.nombre || usuario?.nombre || "Usuario";
 
-  const accesosRapidos = esAdmin
+  const materiasQuedadas = estudianteActual
+    ? obtenerMateriasQuedadas(estudianteActual.id)
+    : [];
+  const semestresAprobados = estudianteActual
+    ? estudianteActual.semestresCursados.filter((s) => s.estado === "Aprobado").length
+    : 0;
+  const matriculasPendientes = matriculas.filter((m) => m.estado === "Pendiente").length;
+
+  const notificaciones = esAdmin
     ? [
+        ...matriculas.slice(0, 3).map((m) => ({
+          id: m.id,
+          titulo: `Matrícula: ${m.estudianteNombre}`,
+          detalle: `${m.estado} · Semestre ${m.semestreNumero} (${m.totalCreditos} cr.)`,
+          tipo: m.estado === "Aprobada" ? "ok" : m.estado === "Pendiente" ? "pending" : "info"
+        })),
         {
-          to: "/servicios/nuevo",
-          titulo: "Nuevo curso",
-          desc: "Publicar asignatura en el catálogo",
-          tono: "blue",
-          icono: (
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <circle cx="12" cy="12" r="10" />
-              <line x1="12" y1="8" x2="12" y2="16" />
-              <line x1="8" y1="12" x2="16" y2="12" />
-            </svg>
-          )
-        },
-        {
-          to: "/servicios",
-          titulo: "Gestionar catálogo",
-          desc: "Revisar cursos y cupos activos",
-          tono: "indigo",
-          icono: (
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
-            </svg>
-          )
-        },
-        {
-          to: "/recursos",
-          titulo: "Recursos UI",
-          desc: "Componentes y guías interactivas",
-          tono: "emerald",
-          icono: (
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <rect x="3" y="3" width="7" height="7" />
-              <rect x="14" y="3" width="7" height="7" />
-              <rect x="14" y="14" width="7" height="7" />
-              <rect x="3" y="14" width="7" height="7" />
-            </svg>
-          )
-        },
-        {
-          to: "/calificaciones",
-          titulo: "Calificaciones",
-          desc: "Consolidado de rendimiento",
-          tono: "amber",
-          icono: (
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <path d="M18 20V10" />
-              <path d="M12 20V4" />
-              <path d="M6 20v-6" />
-            </svg>
-          )
+          id: "sys-cfg",
+          titulo: "Límite de créditos activo",
+          detalle: `Máximo ${config.maxCreditosSemestre} créditos por semestre`,
+          tipo: "info"
         }
       ]
     : [
+        ...matriculas
+          .filter((m) => m.estudianteId === usuario?.id)
+          .slice(0, 2)
+          .map((m) => ({
+            id: m.id,
+            titulo: `Solicitud Semestre ${m.semestreNumero}`,
+            detalle: `Estado: ${m.estado} · ${m.totalCreditos} créditos`,
+            tipo: m.estado === "Aprobada" ? "ok" : "pending"
+          })),
         {
-          to: "/servicios",
-          titulo: "Matricular materias",
-          desc: "Explora el catálogo del periodo",
-          tono: "blue",
-          icono: (
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
-            </svg>
-          )
-        },
-        {
-          to: "/calificaciones",
-          titulo: "Mis calificaciones",
-          desc: "Consulta notas y promedio",
-          tono: "emerald",
-          icono: (
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <path d="M18 20V10" />
-              <path d="M12 20V4" />
-              <path d="M6 20v-6" />
-            </svg>
-          )
-        },
-        {
-          to: "/recursos",
-          titulo: "Recursos UI",
-          desc: "Herramientas y guías de apoyo",
-          tono: "indigo",
-          icono: (
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <rect x="3" y="3" width="7" height="7" />
-              <rect x="14" y="3" width="7" height="7" />
-              <rect x="14" y="14" width="7" height="7" />
-              <rect x="3" y="14" width="7" height="7" />
-            </svg>
-          )
-        },
-        {
-          to: "/contacto",
-          titulo: "Enviar solicitud",
-          desc: "Radica trámites académicos",
-          tono: "amber",
-          icono: (
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-            </svg>
-          )
+          id: "sys-est",
+          titulo: materiasQuedadas.length > 0 ? "Materias pendientes por repetir" : "Historial al día",
+          detalle:
+            materiasQuedadas.length > 0
+              ? `Tienes ${materiasQuedadas.length} materia(s) reprobada(s) disponible(s) para rematricular.`
+              : `Máximo permitido: ${config.maxCreditosSemestre} créditos por semestre.`,
+          tipo: materiasQuedadas.length > 0 ? "pending" : "info"
         }
       ];
-
-  const notificaciones = [
-    ...(solicitudes || []).slice(0, 3).map((sol) => ({
-      id: sol.id,
-      titulo: sol.asunto,
-      detalle: `${sol.estado || "Registrada"} · ${sol.estudiante || sol.nombre || "Portal"}`,
-      tipo: sol.estado === "Respondida" ? "ok" : "pending"
-    })),
-    {
-      id: "sys-update",
-      titulo: esAdmin ? "Panel de gestión activo" : "Matrícula semestral habilitada",
-      detalle: esAdmin
-        ? `${catalogo.length} asignaturas publicadas en el catálogo`
-        : `${totalCreditos} créditos inscritos actualmente`,
-      tipo: "info"
-    }
-  ];
 
   return (
     <main className="main-content page-enter">
@@ -164,15 +84,18 @@ function Inicio() {
               </span>
               <h1 className="dashboard-hero-title">Academiq Hub</h1>
               <p className="dashboard-hero-subtitle">
-                Plataforma académica y de servicios estudiantiles · {usuario?.programa || "Ingeniería en Sistemas"}
+                Plataforma académica institucional ·{" "}
+                {esAdmin
+                  ? "Panel de Administración"
+                  : carreraEstudiante?.nombre || usuario?.programa || "Ingeniería en Sistemas"}
               </p>
 
               <div className={`animated-message dashboard-notice ${mensajeVisible ? "is-visible" : ""}`}>
                 <span>
                   ✨ <strong>{esAdmin ? "Gestión Activa:" : "Periodo Activo:"}</strong>{" "}
                   {esAdmin
-                    ? `${catalogo.length} asignaturas publicadas y ${solicitudes.length} solicitudes registradas.`
-                    : `Tienes ${cantidadInscripciones} materias (${totalCreditos} créditos) en matrícula.`}
+                    ? `${materias.length} materias, ${carreras.length} carreras y ${matriculasPendientes} matrícula(s) pendiente(s).`
+                    : `Límite vigente de ${config.maxCreditosSemestre} créditos por semestre.`}
                 </span>
                 <button
                   type="button"
@@ -199,71 +122,70 @@ function Inicio() {
                   <line x1="62" y1="22" x2="62" y2="42" stroke="#2563eb" strokeWidth="2.5" strokeLinecap="round" />
                   <circle cx="62" cy="44" r="3.5" fill="#2563eb" />
                 </g>
-                <g transform="translate(136, 94)">
-                  <rect x="0" y="0" width="64" height="44" rx="7" fill="#ffffff" stroke="#2563eb" strokeWidth="2" />
-                  <line x1="12" y1="14" x2="52" y2="14" stroke="#93c5fd" strokeWidth="3" strokeLinecap="round" />
-                  <line x1="12" y1="24" x2="42" y2="24" stroke="#bfdbfe" strokeWidth="3" strokeLinecap="round" />
-                  <circle cx="48" cy="32" r="6" fill="#dbeafe" stroke="#2563eb" strokeWidth="1.8" />
-                </g>
               </svg>
             </div>
           </section>
 
           <section className="kpi-grid" aria-label="Indicadores principales">
-            <article className="kpi-card kpi-card--blue">
-              <span className="kpi-label">Asignaturas activas</span>
-              <strong className="kpi-value">{catalogo.length}</strong>
-              <span className="kpi-meta">Catálogo disponible</span>
-            </article>
-
-            <article className="kpi-card kpi-card--amber">
-              <span className="kpi-label">Solicitudes registradas</span>
-              <strong className="kpi-value">{solicitudes.length}</strong>
-              <span className="kpi-meta">Gestión de trámites</span>
-            </article>
-
-            <article className="kpi-card kpi-card--green">
-              <span className="kpi-label">Materias matriculadas</span>
-              <strong className="kpi-value">{cantidadInscripciones}</strong>
-              <span className="kpi-meta">{totalCreditos} créditos inscritos</span>
-            </article>
-
-            <article className="kpi-card kpi-card--lavender">
-              <span className="kpi-label">{esAdmin ? "Nivel de acceso" : "Semestre actual"}</span>
-              <strong className="kpi-value kpi-value--text">
-                {usuario?.semestre || (esAdmin ? "Administrador" : "7° Semestre")}
-              </strong>
-              <span className="kpi-meta">{usuario?.codigo || "UNICOMFACAUCA"}</span>
-            </article>
-          </section>
-
-          <section className="dashboard-section">
-            <div className="dashboard-section-head">
-              <h2>Accesos rápidos</h2>
-            </div>
-            <div className="quick-actions-grid">
-              {accesosRapidos.map((accion) => (
-                <Link key={accion.to + accion.titulo} to={accion.to} className="quick-action-card">
-                  <span className={`quick-action-icon quick-action-icon--${accion.tono}`}>
-                    {accion.icono}
-                  </span>
-                  <div>
-                    <strong className="quick-action-title">{accion.titulo}</strong>
-                    <span className="quick-action-desc">{accion.desc}</span>
-                  </div>
-                </Link>
-              ))}
-            </div>
+            {esAdmin ? (
+              <>
+                <article className="kpi-card kpi-card--blue">
+                  <span className="kpi-label">Materias registradas</span>
+                  <strong className="kpi-value">{materias.length}</strong>
+                  <span className="kpi-meta">Catálogo académico</span>
+                </article>
+                <article className="kpi-card kpi-card--lavender">
+                  <span className="kpi-label">Carreras activas</span>
+                  <strong className="kpi-value">{carreras.length}</strong>
+                  <span className="kpi-meta">Planes curriculares</span>
+                </article>
+                <article className="kpi-card kpi-card--green">
+                  <span className="kpi-label">Estudiantes</span>
+                  <strong className="kpi-value">{estudiantes.length}</strong>
+                  <span className="kpi-meta">Activos en plataforma</span>
+                </article>
+                <article className="kpi-card kpi-card--amber">
+                  <span className="kpi-label">Matrículas pendientes</span>
+                  <strong className="kpi-value">{matriculasPendientes}</strong>
+                  <span className="kpi-meta">Por revisar</span>
+                </article>
+              </>
+            ) : (
+              <>
+                <article className="kpi-card kpi-card--blue">
+                  <span className="kpi-label">Semestres aprobados</span>
+                  <strong className="kpi-value">{semestresAprobados}</strong>
+                  <span className="kpi-meta">Historial académico</span>
+                </article>
+                <article className="kpi-card kpi-card--amber">
+                  <span className="kpi-label">Materias quedadas</span>
+                  <strong className="kpi-value">{materiasQuedadas.length}</strong>
+                  <span className="kpi-meta">Disponibles para repetir</span>
+                </article>
+                <article className="kpi-card kpi-card--green">
+                  <span className="kpi-label">Límite de créditos</span>
+                  <strong className="kpi-value">{config.maxCreditosSemestre}</strong>
+                  <span className="kpi-meta">Tope por semestre</span>
+                </article>
+                <article className="kpi-card kpi-card--lavender">
+                  <span className="kpi-label">Código estudiantil</span>
+                  <strong className="kpi-value kpi-value--text">
+                    {estudianteActual?.codigo || usuario?.codigo}
+                  </strong>
+                  <span className="kpi-meta">{carreraEstudiante?.codigo || "UNICOMFACAUCA"}</span>
+                </article>
+              </>
+            )}
           </section>
 
           <section className="dashboard-section">
             <div className="dashboard-section-head">
               <h2>Asignaturas destacadas</h2>
-              <Link to="/servicios" className="dashboard-link">
-                Ver todas →
+              <Link to={esAdmin ? "/admin/materias" : "/semestres"} className="dashboard-link">
+                {esAdmin ? "Gestionar todas →" : "Ver mis semestres →"}
               </Link>
             </div>
-            <FeaturedCourseCarousel cursos={catalogo} />
+            <FeaturedCourseCarousel cursos={materias} />
           </section>
         </div>
 

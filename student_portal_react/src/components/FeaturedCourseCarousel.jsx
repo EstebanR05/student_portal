@@ -1,13 +1,16 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { useFormulario } from "../context/FormularioContext";
+import { usePortal } from "../context/PortalContext";
+import { useAuth } from "../context/AuthContext";
 
 function FeaturedCourseCarousel({ cursos: cursosProp }) {
-  const { catalogo } = useFormulario();
+  const { materias } = usePortal();
+  const { usuario } = useAuth();
   const [indice, setIndice] = useState(0);
   const [pausado, setPausado] = useState(false);
 
-  const cursos = cursosProp || catalogo || [];
+  const cursos = cursosProp || materias || [];
+  const esAdmin = usuario?.rol === "administrador";
 
   useEffect(() => {
     if (pausado || cursos.length <= 1) return;
@@ -31,13 +34,6 @@ function FeaturedCourseCarousel({ cursos: cursosProp }) {
   const irSiguiente = () => {
     setIndice((actual) => (actual + 1) % cursos.length);
   };
-
-  const badgeClase =
-    curso.estado === "aprobada" || curso.estado === "disponible"
-      ? "badge--approved"
-      : curso.estado === "reprobada"
-      ? "badge--failed"
-      : "badge--pending";
 
   return (
     <section className="carousel-container" aria-label="Asignaturas destacadas">
@@ -93,8 +89,8 @@ function FeaturedCourseCarousel({ cursos: cursosProp }) {
         <div className="carousel-info">
           <div className="carousel-title-row">
             <h4 className="carousel-title">{curso.titulo}</h4>
-            {curso.estado && (
-              <span className={`badge ${badgeClase}`}>{curso.estado}</span>
+            {curso.codigo && (
+              <span className="badge badge--approved">{curso.codigo}</span>
             )}
           </div>
           <p className="carousel-desc">{curso.descripcion}</p>
@@ -104,8 +100,11 @@ function FeaturedCourseCarousel({ cursos: cursosProp }) {
             {curso.horario && <span>🕒 {curso.horario}</span>}
           </div>
           <div style={{ marginTop: "1rem" }}>
-            <Link to={`/servicios/${curso.id}`} className="btn btn--primary btn--sm">
-              Ver Detalle del Curso →
+            <Link
+              to={esAdmin ? "/admin/materias" : "/semestres"}
+              className="btn btn--primary btn--sm"
+            >
+              {esAdmin ? "Gestionar Materias →" : "Ir a Semestres →"}
             </Link>
           </div>
         </div>
