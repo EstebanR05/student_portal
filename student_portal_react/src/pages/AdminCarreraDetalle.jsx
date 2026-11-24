@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { usePortal } from "../context/PortalContext";
+import BackButton from "../components/BackButton";
 import Toast from "../components/Toast";
 
 function AdminCarreraDetalle() {
@@ -75,19 +76,15 @@ function AdminCarreraDetalle() {
     <main className="main-content page-enter">
       <div className="section-block">
         <div className="dashboard-section-head">
-          <div>
-            <h2>{carrera.nombre} ({carrera.codigo})</h2>
-            <p style={{ margin: "0.25rem 0 0", color: "var(--text-muted)" }}>
-              Gestiona los semestres de la carrera y asigna las materias correspondientes.
-            </p>
+          <div className="page-head-left">
+            <BackButton onClick={() => navigate("/admin/carreras")} label="Volver a carreras" />
+            <div>
+              <h2>{carrera.nombre} ({carrera.codigo})</h2>
+              <p style={{ margin: "0.25rem 0 0", color: "var(--text-muted)" }}>
+                Gestiona los semestres de la carrera y asigna las materias correspondientes.
+              </p>
+            </div>
           </div>
-          <button
-            type="button"
-            className="btn btn--outline btn--sm"
-            onClick={() => navigate("/admin/carreras")}
-          >
-            ← Volver a carreras
-          </button>
         </div>
 
         <form

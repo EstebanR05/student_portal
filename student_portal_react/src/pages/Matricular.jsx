@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { usePortal } from "../context/PortalContext";
+import BackButton from "../components/BackButton";
 import Tabs from "../components/Tabs";
 import Toast from "../components/Toast";
 
@@ -125,24 +126,18 @@ function Matricular() {
     <main className="main-content page-enter">
       <div className="section-block">
         <div className="dashboard-section-head">
-          <div>
-            <h2>Matrícula · Semestre {semestreNumero}</h2>
-            <p style={{ margin: "0.25rem 0 0", color: "var(--text-muted)" }}>
-              Selecciona las asignaturas que deseas inscribir para este periodo.
-            </p>
+          <div className="page-head-left">
+            <BackButton onClick={() => navigate("/semestres")} label="Volver a semestres" />
+            <div>
+              <h2>Matrícula · Semestre {semestreNumero}</h2>
+              <p style={{ margin: "0.25rem 0 0", color: "var(--text-muted)" }}>
+                Selecciona las asignaturas que deseas inscribir para este periodo.
+              </p>
+            </div>
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", flexWrap: "wrap" }}>
-            <span className="badge badge--approved" data-testid="contador-creditos">
-              {totalCreditos} / {config.maxCreditosSemestre} créditos
-            </span>
-            <button
-              type="button"
-              className="btn btn--outline btn--sm"
-              onClick={() => navigate("/semestres")}
-            >
-              ← Volver
-            </button>
-          </div>
+          <span className="badge badge--approved" data-testid="contador-creditos">
+            {totalCreditos} / {config.maxCreditosSemestre} créditos
+          </span>
         </div>
 
         <div style={{ marginTop: "1.25rem" }}>

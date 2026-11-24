@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { usePortal } from "../context/PortalContext";
+import BackButton from "../components/BackButton";
 import Accordion from "../components/Accordion";
 
 const TERMINOS_MATRICULA = [
@@ -74,19 +75,18 @@ function FormularioMatriculacion() {
     <main className="main-content page-enter">
       <div className="section-block">
         <div className="dashboard-section-head">
-          <div>
-            <h2>Formulario de Matriculación · Semestre {semestreNumero}</h2>
-            <p style={{ margin: "0.25rem 0 0", color: "var(--text-muted)" }}>
-              Confirma tus datos de contacto y revisa las asignaturas seleccionadas.
-            </p>
+          <div className="page-head-left">
+            <BackButton
+              onClick={() => navigate("/matricular", { state: { semestreNumero } })}
+              label="Volver a selección de materias"
+            />
+            <div>
+              <h2>Formulario de Matriculación · Semestre {semestreNumero}</h2>
+              <p style={{ margin: "0.25rem 0 0", color: "var(--text-muted)" }}>
+                Confirma tus datos de contacto y revisa las asignaturas seleccionadas.
+              </p>
+            </div>
           </div>
-          <button
-            type="button"
-            className="btn btn--outline btn--sm"
-            onClick={() => navigate("/matricular", { state: { semestreNumero } })}
-          >
-            ← Volver a selección
-          </button>
         </div>
 
         <div className="contacto-layout" style={{ marginTop: "1.25rem" }}>

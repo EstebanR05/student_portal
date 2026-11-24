@@ -1,6 +1,7 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { usePortal } from "../context/PortalContext";
+import BackButton from "../components/BackButton";
 
 function SemestreNotas() {
   const { numero } = useParams();
@@ -22,19 +23,15 @@ function SemestreNotas() {
     <main className="main-content page-enter">
       <div className="section-block">
         <div className="dashboard-section-head">
-          <div>
-            <h2>Notas · Semestre {numero}</h2>
-            <p style={{ margin: "0.25rem 0 0", color: "var(--text-muted)" }}>
-              {semestre ? `Periodo ${semestre.periodo} · Estado: ${semestre.estado}` : "Semestre no encontrado"}
-            </p>
+          <div className="page-head-left">
+            <BackButton onClick={() => navigate("/semestres")} label="Volver a semestres" />
+            <div>
+              <h2>Notas · Semestre {numero}</h2>
+              <p style={{ margin: "0.25rem 0 0", color: "var(--text-muted)" }}>
+                {semestre ? `Periodo ${semestre.periodo} · Estado: ${semestre.estado}` : "Semestre no encontrado"}
+              </p>
+            </div>
           </div>
-          <button
-            type="button"
-            className="btn btn--outline btn--sm"
-            onClick={() => navigate("/semestres")}
-          >
-            ← Volver atrás
-          </button>
         </div>
 
         {!semestre || semestre.notas.length === 0 ? (

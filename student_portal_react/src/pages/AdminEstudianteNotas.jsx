@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { usePortal } from "../context/PortalContext";
+import BackButton from "../components/BackButton";
 import Tabs from "../components/Tabs";
 import Toast from "../components/Toast";
 
@@ -142,20 +143,16 @@ function AdminEstudianteNotas() {
     <main className="main-content page-enter">
       <div className="section-block">
         <div className="dashboard-section-head">
-          <div>
-            <h2>Notas de {estudiante.nombre}</h2>
-            <p style={{ margin: "0.25rem 0 0", color: "var(--text-muted)" }}>
-              Código: <strong>{estudiante.codigo}</strong> · Carrera:{" "}
-              <strong>{carrera?.nombre || "Sin asignar"}</strong>
-            </p>
+          <div className="page-head-left">
+            <BackButton onClick={() => navigate("/admin/estudiantes")} label="Volver a estudiantes" />
+            <div>
+              <h2>Notas de {estudiante.nombre}</h2>
+              <p style={{ margin: "0.25rem 0 0", color: "var(--text-muted)" }}>
+                Código: <strong>{estudiante.codigo}</strong> · Carrera:{" "}
+                <strong>{carrera?.nombre || "Sin asignar"}</strong>
+              </p>
+            </div>
           </div>
-          <button
-            type="button"
-            className="btn btn--outline btn--sm"
-            onClick={() => navigate("/admin/estudiantes")}
-          >
-            ← Volver a estudiantes
-          </button>
         </div>
 
         <div style={{ marginTop: "1.25rem" }}>
