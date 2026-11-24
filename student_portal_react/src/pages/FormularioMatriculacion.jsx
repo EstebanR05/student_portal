@@ -4,6 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import { usePortal } from "../context/PortalContext";
 import BackButton from "../components/BackButton";
 import Accordion from "../components/Accordion";
+import { detectarCrucesHorario } from "../utils/horarios";
 
 const TERMINOS_MATRICULA = [
   {
@@ -37,7 +38,9 @@ function FormularioMatriculacion() {
   const [observaciones, setObservaciones] = useState("");
   const [error, setError] = useState("");
 
-  if (!materiasSeleccionadas?.length || !semestreNumero) {
+  const { cruces } = detectarCrucesHorario(materiasSeleccionadas);
+
+  if (!materiasSeleccionadas?.length || !semestreNumero || cruces.length > 0) {
     return <Navigate to="/semestres" replace />;
   }
 

@@ -5,6 +5,7 @@ import { usePortal } from "../context/PortalContext";
 import BackButton from "../components/BackButton";
 import Tabs from "../components/Tabs";
 import Toast from "../components/Toast";
+import { detectarCrucesHorario, hayCruceEntreMaterias } from "../utils/horarios";
 
 function Matricular() {
   const location = useLocation();
@@ -37,6 +38,8 @@ function Matricular() {
   const materiasQuedadas = estudiante ? obtenerMateriasQuedadas(estudiante.id) : [];
 
   const totalCreditos = seleccionadas.reduce((acc, m) => acc + Number(m.creditos || 0), 0);
+  const { cruces, idsEnCruce } = detectarCrucesHorario(seleccionadas);
+  const hayCruces = cruces.length > 0;
 
   const toggleMateria = (materia) => {
     const yaSeleccionada = seleccionadas.some((m) => m.id === materia.id);
@@ -54,6 +57,14 @@ function Matricular() {
       return;
     }
 
+    const conflicto = seleccionadas.find((m) => hayCruceEntreMaterias(m, materia));
+    if (conflicto) {
+      setToast({
+        mensaje: `Cruce de horario: "${materia.titulo}" se cruza con "${conflicto.titulo}". Cambia una de las dos para poder continuar.`,
+        tipo: "error"
+      });
+    }
+
     setSeleccionadas((prev) => [...prev, materia]);
   };
 
@@ -66,17 +77,28 @@ function Matricular() {
       <div className="card-grid">
         {lista.map((mat) => {
           const marcada = seleccionadas.some((m) => m.id === mat.id);
+          const enCruce = marcada && idsEnCruce.has(mat.id);
           return (
-            <article key={mat.id} className={`card ${marcada ? "card--accent" : ""}`}>
+            <article
+              key={mat.id}
+              className={`card ${enCruce ? "card--conflict" : marcada ? "card--accent" : ""}`}
+            >
               <div className="card__header">
                 <h3 className="card__title">{mat.titulo}</h3>
-                <span className="badge badge--pending">{mat.creditos} cr.</span>
+                <div style={{ display: "inline-flex", gap: "0.4rem", alignItems: "center" }}>
+                  {enCruce && <span className="badge badge--failed">Cruce de horario</span>}
+                  <span className="badge badge--pending">{mat.creditos} cr.</span>
+                </div>
               </div>
               <p className="card__desc">{mat.descripcion}</p>
               <div className="card__meta-list">
                 <div className="card__meta-item">
                   <span className="meta-label">Código</span>
                   <span className="meta-value">{mat.codigo}</span>
+                </div>
+                <div className="card__meta-item">
+                  <span className="meta-label">Horario</span>
+                  <span className="meta-value">{mat.horario}</span>
                 </div>
                 <div className="card__meta-item">
                   <span className="meta-label">Docente</span>
@@ -144,6 +166,21 @@ function Matricular() {
           <Tabs items={tabsItems} />
         </div>
 
+        {hayCruces && (
+          <div className="alert-box alert-box--error" role="alert" style={{ marginTop: "1.25rem" }}>
+            <strong>⚠️ Tienes cruces de horario en tu selección:</strong>
+            <ul style={{ margin: "0.4rem 0 0 1.2rem", padding: 0 }}>
+              {cruces.map((c) => (
+                <li key={`${c.materiaA.id}-${c.materiaB.id}`}>
+                  <strong>{c.materiaA.titulo}</strong> ({c.materiaA.horario}) se cruza con{" "}
+                  <strong>{c.materiaB.titulo}</strong> ({c.materiaB.horario}) el{" "}
+                  {c.diasComunes.join(", ")}.
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
         <div
           className="matricula-summary"
           style={{
@@ -159,12 +196,13 @@ function Matricular() {
             <strong>Materias seleccionadas: {seleccionadas.length}</strong>
             <p style={{ margin: "0.2rem 0 0", color: "var(--text-muted)", fontSize: "0.9rem" }}>
               Total de créditos: {totalCreditos} de {config.maxCreditosSemestre} permitidos
+              {hayCruces ? " · Resuelve los cruces de horario para continuar." : ""}
             </p>
           </div>
           <button
             type="button"
             className="btn btn--primary"
-            disabled={seleccionadas.length === 0}
+            disabled={seleccionadas.length === 0 || hayCruces}
             onClick={() =>
               navigate("/matricular/formulario", {
                 state: {

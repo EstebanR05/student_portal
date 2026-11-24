@@ -2083,6 +2083,12 @@ footer p {
   font-size: 0.72rem;
 }
 
+.card--conflict {
+  border-color: var(--status-failed-border);
+  background: linear-gradient(135deg, #fffafb 0%, #fff1f2 100%);
+  box-shadow: 0 0 0 1px var(--status-failed-border);
+}
+
 .page-head-left {
   display: flex;
   align-items: flex-start;
