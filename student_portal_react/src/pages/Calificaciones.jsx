@@ -1,108 +1,164 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
+import { useFormulario } from "../context/FormularioContext";
+import { useAuth } from "../context/AuthContext";
+import { obtenerMockUsuario } from "../data/usuariosMock";
+import Toast from "../components/Toast";
 
 function Calificaciones() {
-  const calificacionesData = [
-    { id: 1, materia: "Desarrollo de Aplicaciones Web", notas: [4.5, 4.0, 3.8, 4.2, 4.6] },
-    { id: 2, materia: "Estructuras de Datos y Algoritmos", notas: [3.8, 4.0, 3.5, 4.5, 4.2] },
-    { id: 3, materia: "Bases de Datos Relacionales", notas: [4.2, 4.5, 4.8, 3.9, 4.4] },
-    { id: 4, materia: "Arquitectura de Software", notas: [3.5, 3.2, 4.0, 3.8, 3.5] },
-    { id: 5, materia: "Cálculo Integral", notas: [2.0, 2.5, 2.8, 2.2, 2.4] },
-    { id: 6, materia: "Sistemas Operativos y Redes", notas: [3.9, 4.1, 4.0, 3.7, 4.3] }
-  ];
+  const { catalogo } = useFormulario();
+  const { usuario } = useAuth();
+  const [toast, setToast] = useState(null);
 
-  const [promedioGeneral, setPromedioGeneral] = useState(null);
+  const mockUsuario = obtenerMockUsuario(usuario?.id);
+  const calificacionesIniciales = mockUsuario?.calificacionesIniciales || [];
+
+  const calificacionesData = calificacionesIniciales
+    .map((registro) => {
+      const curso = catalogo.find((c) => c.id === registro.cursoId);
+      if (!curso) return null;
+      return {
+        id: curso.id,
+        materia: curso.titulo,
+        notas: [
+          Number(registro.nota1),
+          Number(registro.nota2),
+          Number(registro.nota3)
+        ]
+      };
+    })
+    .filter(Boolean);
 
   const calcularPromedioNotas = (notas) => {
     const suma = notas.reduce((acc, curr) => acc + Number(curr), 0);
     return Number((suma / notas.length).toFixed(2));
   };
 
+  const promediosPorMateria = calificacionesData.map((m) => ({
+    ...m,
+    promedio: calcularPromedioNotas(m.notas)
+  }));
+
+  const aprobadas = promediosPorMateria.filter((m) => m.promedio >= 3.0).length;
+  const reprobadas = promediosPorMateria.length - aprobadas;
+
+  const promedioCalculado =
+    promediosPorMateria.length > 0
+      ? calcularPromedioNotas(promediosPorMateria.map((m) => m.promedio))
+      : null;
+
+  const [promedioGeneral, setPromedioGeneral] = useState(promedioCalculado);
+
   const handleCalcularGeneral = () => {
-    const promedios = calificacionesData.map((m) => calcularPromedioNotas(m.notas));
-    const promedio = calcularPromedioNotas(promedios);
-    setPromedioGeneral(promedio);
+    if (promediosPorMateria.length === 0) return;
+    setPromedioGeneral(promedioCalculado);
+    setToast({
+      mensaje: `Promedio general actualizado: ${promedioCalculado.toFixed(2)} / 5.0`,
+      tipo: promedioCalculado >= 3.0 ? "success" : "warning"
+    });
   };
 
+  const cerrarToast = useCallback(() => setToast(null), []);
+
   return (
-    <main className="main-content">
+    <main className="main-content page-enter">
       <section className="section-block">
-        <h2>📊 Calificaciones y Rendimiento Académico</h2>
-        <p>
-          Consulta de notas registradas por asignatura, cálculo automático del promedio por materia y estado
-          aprobatorio (mínimo 3.0):
-        </p>
-
-        <p className="table-hint">👉 Desliza horizontalmente la tabla para ver todas las notas</p>
-
-        <div className="table-responsive">
-          <table>
-            <thead>
-              <tr>
-                <th>Asignatura</th>
-                <th className="text-center">Nota 1</th>
-                <th className="text-center">Nota 2</th>
-                <th className="text-center">Nota 3</th>
-                <th className="text-center">Nota 4</th>
-                <th className="text-center">Nota 5</th>
-                <th className="text-center">Promedio Final</th>
-                <th className="text-center">Estado</th>
-              </tr>
-            </thead>
-            <tbody>
-              {calificacionesData.map((item) => {
-                const prom = calcularPromedioNotas(item.notas);
-                const aprobada = prom >= 3.0;
-                return (
-                  <tr key={item.id}>
-                    <td className="font-bold">{item.materia}</td>
-                    <td className="text-center">{item.notas[0].toFixed(1)}</td>
-                    <td className="text-center">{item.notas[1].toFixed(1)}</td>
-                    <td className="text-center">{item.notas[2].toFixed(1)}</td>
-                    <td className="text-center">{item.notas[3].toFixed(1)}</td>
-                    <td className="text-center">{item.notas[4].toFixed(1)}</td>
-                    <td className="text-center font-bold" style={{ color: "var(--color-brand)" }}>
-                      {prom.toFixed(2)}
-                    </td>
-                    <td className="text-center">
-                      <span className={`badge ${aprobada ? "badge--approved" : "badge--failed"}`}>
-                        {aprobada ? "Aprobada" : "Reprobada"}
-                      </span>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-
-        <div className="acciones-calificaciones">
-          <button type="button" className="btn btn--primary" onClick={handleCalcularGeneral}>
-            Calcular Promedio General del Semestre
-          </button>
-        </div>
-
-        {promedioGeneral !== null && (
-          <div className="summary-card">
-            <h3>Promedio General del Semestre</h3>
-            <div className="score">{promedioGeneral.toFixed(2)} / 5.0</div>
-            <div
-              className={`alert-box ${
-                promedioGeneral >= 4.0
-                  ? "alert-box--success"
-                  : promedioGeneral >= 3.0
-                  ? "alert-box--info"
-                  : "alert-box--error"
-              }`}
-            >
-              {promedioGeneral >= 4.0
-                ? "🌟 ¡Excelente rendimiento académico! Tu promedio supera el estándar institucional."
-                : promedioGeneral >= 3.0
-                ? "👍 Rendimiento académico satisfactorio. Cumples con el valor mínimo aprobatorio de 3.0."
-                : "⚠️ Rendimiento académico en riesgo. El promedio está por debajo del mínimo de 3.0."}
-            </div>
+        <div className="solicitudes-header">
+          <div>
+            <h2 style={{ marginBottom: "0.35rem" }}>📊 Calificaciones y Rendimiento Académico</h2>
+            <p style={{ margin: 0, color: "var(--text-muted)" }}>
+              Registro de notas para <strong>{usuario?.nombre}</strong> · Mínimo aprobatorio: <strong>3.0</strong>
+            </p>
           </div>
+
+          {calificacionesData.length > 0 && (
+            <button
+              type="button"
+              className="btn btn--primary"
+              onClick={handleCalcularGeneral}
+              style={{ flexShrink: 0 }}
+            >
+              Calcular Promedio General
+            </button>
+          )}
+        </div>
+
+        {calificacionesData.length === 0 ? (
+          <div className="empty-state" style={{ padding: "2rem 1rem", textAlign: "center", marginTop: "1.25rem" }}>
+            <p style={{ margin: 0, color: "var(--text-muted)" }}>
+              No hay calificaciones registradas para tu usuario en este periodo.
+            </p>
+          </div>
+        ) : (
+          <>
+            <div className="calificaciones-kpi-strip">
+              <div className="kpi-card kpi-card--blue">
+                <span className="kpi-value">
+                  {promedioGeneral !== null ? `${promedioGeneral.toFixed(2)} / 5.0` : "—"}
+                </span>
+                <span className="kpi-label">Promedio General</span>
+              </div>
+              <div className="kpi-card kpi-card--green">
+                <span className="kpi-value">{aprobadas}</span>
+                <span className="kpi-label">Asignaturas aprobadas</span>
+              </div>
+              <div className="kpi-card kpi-card--amber">
+                <span className="kpi-value">{reprobadas}</span>
+                <span className="kpi-label">Por recuperar</span>
+              </div>
+              <div className="kpi-card kpi-card--purple">
+                <span className="kpi-value">
+                  {promedioGeneral !== null
+                    ? promedioGeneral >= 4.0
+                      ? "Sobresaliente"
+                      : promedioGeneral >= 3.0
+                        ? "Satisfactorio"
+                        : "En riesgo"
+                    : "Pendiente"}
+                </span>
+                <span className="kpi-label">Estado del periodo</span>
+              </div>
+            </div>
+
+            <div className="table-responsive grades-table-compact" style={{ marginTop: "1.1rem" }}>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Asignatura</th>
+                    <th className="text-center">Nota 1</th>
+                    <th className="text-center">Nota 2</th>
+                    <th className="text-center">Nota 3</th>
+                    <th className="text-center">Promedio Final</th>
+                    <th className="text-center">Estado</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {promediosPorMateria.map((item) => {
+                    const aprobada = item.promedio >= 3.0;
+                    return (
+                      <tr key={item.id}>
+                        <td className="font-bold">{item.materia}</td>
+                        <td className="text-center">{item.notas[0].toFixed(1)}</td>
+                        <td className="text-center">{item.notas[1].toFixed(1)}</td>
+                        <td className="text-center">{item.notas[2].toFixed(1)}</td>
+                        <td className="text-center font-bold" style={{ color: "var(--color-brand)" }}>
+                          {item.promedio.toFixed(2)}
+                        </td>
+                        <td className="text-center">
+                          <span className={`badge ${aprobada ? "badge--approved" : "badge--failed"}`}>
+                            {aprobada ? "Aprobada" : "Reprobada"}
+                          </span>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
       </section>
+
+      {toast && <Toast mensaje={toast.mensaje} tipo={toast.tipo} cerrar={cerrarToast} />}
     </main>
   );
 }

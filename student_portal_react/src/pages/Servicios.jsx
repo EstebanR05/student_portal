@@ -1,12 +1,17 @@
 import { useContext, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FormularioContext } from "../context/FormularioContext";
-import { servicios } from "../data/servicios";
+import { useAuth } from "../context/AuthContext";
 import ServiceCard from "../components/ServiceCard";
+import Modal from "../components/Modal";
+import Toast from "../components/Toast";
 
 function Servicios() {
   const navigate = useNavigate();
+  const { usuario } = useAuth();
   const {
+    catalogo,
+    eliminarCursoCatalogo,
     inscripciones,
     agregarInscripcion,
     eliminarInscripcion,
@@ -15,17 +20,67 @@ function Servicios() {
     totalCreditos
   } = useContext(FormularioContext);
 
-  const [filtro, setFiltro] = useState("todos");
+  const esAdmin = usuario?.rol === "administrador";
 
-  const serviciosFiltrados = servicios.filter((item) => {
+  const [filtro, setFiltro] = useState("todos");
+  const [cursoAEliminar, setCursoAEliminar] = useState(null);
+  const [confirmarVaciar, setConfirmarVaciar] = useState(false);
+  const [toast, setToast] = useState(null);
+
+  const serviciosFiltrados = catalogo.filter((item) => {
     if (filtro === "todos") return true;
     return item.estado === filtro;
   });
 
+  const manejarInscribir = (curso) => {
+    agregarInscripcion(curso);
+    setToast({
+      mensaje: `"${curso.titulo}" agregada a tu matrícula.`,
+      tipo: "success"
+    });
+  };
+
+  const confirmarEliminacion = () => {
+    if (!cursoAEliminar) return;
+    eliminarInscripcion(cursoAEliminar.id);
+    setToast({
+      mensaje: `"${cursoAEliminar.titulo}" fue retirada de tu matrícula.`,
+      tipo: "warning"
+    });
+    setCursoAEliminar(null);
+  };
+
+  const confirmarVaciarTodo = () => {
+    vaciarInscripciones();
+    setConfirmarVaciar(false);
+    setToast({
+      mensaje: "Se ha vaciado tu plan de matrícula.",
+      tipo: "warning"
+    });
+  };
+
+  const manejarEliminarCatalogo = (curso) => {
+    eliminarCursoCatalogo(curso.id);
+    setToast({
+      mensaje: `El curso "${curso.titulo}" fue eliminado del catálogo.`,
+      tipo: "warning"
+    });
+  };
+
   return (
-    <main className="main-content">
+    <main className="main-content page-enter">
       <section className="section-block">
-        <h2>🛠️ Catálogo de Servicios y Asignaturas</h2>
+        <div className="inicio-header">
+          <div>
+            <h2 style={{ marginBottom: "0.5rem" }}>🛠️ Catálogo de Servicios y Asignaturas</h2>
+          </div>
+          {usuario?.rol === "administrador" && (
+            <Link to="/servicios/nuevo" className="btn btn--primary btn--sm">
+              ➕ Nuevo Curso
+            </Link>
+          )}
+        </div>
+
         <p>
           Explora las materias disponibles y gestiónalas directamente en tu plan de matrícula.
           Las inscripciones forman parte del <strong>estado global (Context API)</strong> y se conservan automáticamente
@@ -77,8 +132,10 @@ function Servicios() {
                 creditos={servicio.creditos}
                 estado={servicio.estado}
                 categoria={servicio.categoria}
-                onInscribir={agregarInscripcion}
+                imagen={servicio.imagen}
+                onInscribir={!esAdmin ? manejarInscribir : undefined}
                 estaInscrita={estaInscrita}
+                onEliminarCatalogo={esAdmin ? manejarEliminarCatalogo : undefined}
               />
             );
           })}
@@ -97,7 +154,7 @@ function Servicios() {
             <button
               type="button"
               className="btn btn--outline btn--sm"
-              onClick={vaciarInscripciones}
+              onClick={() => setConfirmarVaciar(true)}
               disabled={inscripciones.length === 0}
             >
               Vaciar Matrícula
@@ -143,7 +200,7 @@ function Servicios() {
                           <button
                             type="button"
                             className="btn btn--danger-subtle btn--sm"
-                            onClick={() => eliminarInscripcion(item.id)}
+                            onClick={() => setCursoAEliminar(item)}
                           >
                             Eliminar
                           </button>
@@ -176,6 +233,48 @@ function Servicios() {
           )}
         </section>
       </section>
+
+      <Modal
+        abierto={Boolean(cursoAEliminar)}
+        cerrar={() => setCursoAEliminar(null)}
+        titulo="Retirar Asignatura"
+      >
+        <p>
+          ¿Confirmas que deseas retirar <strong>{cursoAEliminar?.titulo}</strong> de tu plan de matrícula?
+        </p>
+        <div style={{ display: "flex", gap: "0.75rem", justifyContent: "flex-end", marginTop: "1.25rem" }}>
+          <button type="button" className="btn btn--outline" onClick={() => setCursoAEliminar(null)}>
+            Cancelar
+          </button>
+          <button type="button" className="btn btn--danger-subtle" onClick={confirmarEliminacion}>
+            Sí, retirar
+          </button>
+        </div>
+      </Modal>
+
+      <Modal
+        abierto={confirmarVaciar}
+        cerrar={() => setConfirmarVaciar(false)}
+        titulo="Vaciar Plan de Matrícula"
+      >
+        <p>¿Deseas eliminar todas las asignaturas inscritas actualmente?</p>
+        <div style={{ display: "flex", gap: "0.75rem", justifyContent: "flex-end", marginTop: "1.25rem" }}>
+          <button type="button" className="btn btn--outline" onClick={() => setConfirmarVaciar(false)}>
+            Cancelar
+          </button>
+          <button type="button" className="btn btn--danger-subtle" onClick={confirmarVaciarTodo}>
+            Vaciar todo
+          </button>
+        </div>
+      </Modal>
+
+      {toast && (
+        <Toast
+          mensaje={toast.mensaje}
+          tipo={toast.tipo}
+          cerrar={() => setToast(null)}
+        />
+      )}
     </main>
   );
 }

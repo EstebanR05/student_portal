@@ -8,8 +8,10 @@ function ServiceCard({
   creditos,
   estado,
   categoria,
+  imagen,
   onInscribir,
-  estaInscrita = false
+  estaInscrita = false,
+  onEliminarCatalogo
 }) {
   const badgeClase =
     estado === "aprobada" || estado === "disponible"
@@ -20,31 +22,44 @@ function ServiceCard({
 
   return (
     <article className="card">
-      <div className="card__header">
-        <h3 className="card__title">{titulo}</h3>
-        {estado && <span className={`badge ${badgeClase}`}>{estado}</span>}
-      </div>
-      <div className="card__body">
-        <p className="card__desc">{descripcion}</p>
-        <div className="card__meta-list">
-          {docente && (
-            <div className="card__meta-item">
-              <span className="meta-label">Responsable / Docente:</span>
-              <span className="meta-value">{docente}</span>
+      <div>
+        <div className="card__media">
+          {imagen ? (
+            <img src={imagen} alt={`Portada de ${titulo}`} className="card__image" />
+          ) : (
+            <div className="card__placeholder">
+              <span aria-hidden="true">📘</span>
+              <span>{categoria || "Asignatura"}</span>
             </div>
           )}
-          {creditos && (
-            <div className="card__meta-item">
-              <span className="meta-label">Créditos:</span>
-              <span className="meta-value">{creditos} Créditos</span>
-            </div>
-          )}
-          {categoria && (
-            <div className="card__meta-item">
-              <span className="meta-label">Categoría:</span>
-              <span className="meta-value">{categoria}</span>
-            </div>
-          )}
+        </div>
+
+        <div className="card__header">
+          <h3 className="card__title">{titulo}</h3>
+          {estado && <span className={`badge ${badgeClase}`}>{estado}</span>}
+        </div>
+        <div className="card__body">
+          <p className="card__desc">{descripcion}</p>
+          <div className="card__meta-list">
+            {docente && (
+              <div className="card__meta-item">
+                <span className="meta-label">Responsable / Docente:</span>
+                <span className="meta-value">{docente}</span>
+              </div>
+            )}
+            {creditos && (
+              <div className="card__meta-item">
+                <span className="meta-label">Créditos:</span>
+                <span className="meta-value">{creditos} Créditos</span>
+              </div>
+            )}
+            {categoria && (
+              <div className="card__meta-item">
+                <span className="meta-label">Categoría:</span>
+                <span className="meta-value">{categoria}</span>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
@@ -64,11 +79,21 @@ function ServiceCard({
             <button
               type="button"
               className="btn btn--primary btn--sm"
-              onClick={() => onInscribir({ id, titulo, docente, creditos, estado, categoria })}
+              onClick={() => onInscribir({ id, titulo, docente, creditos, estado, categoria, imagen })}
             >
               ➕ Matricular
             </button>
           )
+        )}
+
+        {onEliminarCatalogo && (
+          <button
+            type="button"
+            className="btn btn--danger-subtle btn--sm"
+            onClick={() => onEliminarCatalogo({ id, titulo })}
+          >
+            🗑️ Eliminar curso
+          </button>
         )}
       </div>
     </article>

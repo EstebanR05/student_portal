@@ -1,18 +1,21 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { FormularioContext } from "../context/FormularioContext";
-import { servicios } from "../data/servicios";
+import Modal from "../components/Modal";
+import Toast from "../components/Toast";
 
 function ServicioDetalle() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { inscripciones, agregarInscripcion, eliminarInscripcion } = useContext(FormularioContext);
+  const { catalogo, inscripciones, agregarInscripcion, eliminarInscripcion } = useContext(FormularioContext);
+  const [modalCancelar, setModalCancelar] = useState(false);
+  const [toast, setToast] = useState(null);
 
-  const servicio = servicios.find((item) => item.id === Number(id));
+  const servicio = catalogo.find((item) => item.id === Number(id));
 
   if (!servicio) {
     return (
-      <main className="main-content">
+      <main className="main-content page-enter">
         <section className="section-block not-found-container">
           <p className="not-found-code">404</p>
           <h2 className="not-found-title">Asignatura o Servicio no encontrado</h2>
@@ -36,8 +39,25 @@ function ServicioDetalle() {
       ? "badge--failed"
       : "badge--pending";
 
+  const manejarInscribir = () => {
+    agregarInscripcion(servicio);
+    setToast({
+      mensaje: `Inscripción confirmada en "${servicio.titulo}".`,
+      tipo: "success"
+    });
+  };
+
+  const confirmarCancelacion = () => {
+    eliminarInscripcion(servicio.id);
+    setModalCancelar(false);
+    setToast({
+      mensaje: `Matrícula cancelada para "${servicio.titulo}".`,
+      tipo: "warning"
+    });
+  };
+
   return (
-    <main className="main-content">
+    <main className="main-content page-enter">
       <section className="section-block">
         <div style={{ marginBottom: "1rem" }}>
           <button
@@ -50,6 +70,12 @@ function ServicioDetalle() {
         </div>
 
         <div className="card detail-card">
+          {servicio.imagen && (
+            <div className="detail-media">
+              <img src={servicio.imagen} alt={`Portada de ${servicio.titulo}`} className="detail-image" />
+            </div>
+          )}
+
           <div className="card__header">
             <div>
               <span className="badge badge--pending" style={{ marginBottom: "0.5rem" }}>
@@ -96,7 +122,7 @@ function ServicioDetalle() {
               <button
                 type="button"
                 className="btn btn--danger-subtle"
-                onClick={() => eliminarInscripcion(servicio.id)}
+                onClick={() => setModalCancelar(true)}
               >
                 ✕ Cancelar Matrícula de esta Materia
               </button>
@@ -104,7 +130,7 @@ function ServicioDetalle() {
               <button
                 type="button"
                 className="btn btn--primary"
-                onClick={() => agregarInscripcion(servicio)}
+                onClick={manejarInscribir}
               >
                 ➕ Inscribir en Mi Matrícula
               </button>
@@ -126,6 +152,30 @@ function ServicioDetalle() {
           )}
         </div>
       </section>
+
+      <Modal
+        abierto={modalCancelar}
+        cerrar={() => setModalCancelar(false)}
+        titulo="Cancelar Matrícula"
+      >
+        <p>¿Deseas cancelar tu inscripción en <strong>{servicio.titulo}</strong>?</p>
+        <div style={{ display: "flex", gap: "0.75rem", justifyContent: "flex-end", marginTop: "1.25rem" }}>
+          <button type="button" className="btn btn--outline" onClick={() => setModalCancelar(false)}>
+            Mantener
+          </button>
+          <button type="button" className="btn btn--danger-subtle" onClick={confirmarCancelacion}>
+            Confirmar cancelación
+          </button>
+        </div>
+      </Modal>
+
+      {toast && (
+        <Toast
+          mensaje={toast.mensaje}
+          tipo={toast.tipo}
+          cerrar={() => setToast(null)}
+        />
+      )}
     </main>
   );
 }
